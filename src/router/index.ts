@@ -4,8 +4,6 @@ import swaggerJsDoc from "swagger-jsdoc";
 import swaggerUI from "swagger-ui-express";
 
 import users from "./users" 
-import jobs from "./jobs";
-import booking from "./booking";
 
 export default (app: Application) => {
   const options = {
@@ -39,5 +37,5 @@ export default (app: Application) => {
     res.json({ message: "API Running ! " });
   });
 
-  app.use("/api/v1/", [users, jobs,booking]);
+  app.use("/api/v1/", [users]);
 };
