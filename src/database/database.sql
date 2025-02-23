@@ -14,6 +14,7 @@ SELECT * FROM users;
 
 INSERT INTO users (user_name,user_email,user_password) VALUES ('test','test@test.com','test');
 
+INSERT INTO users (user_name,user_email,user_password) VALUES ('sou','tests@test.com','test');
 
 --psql -U postgres
 --\c jwtdb
