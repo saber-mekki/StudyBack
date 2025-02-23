@@ -1,13 +1,24 @@
-import { addUser, deleteUser, getUser } from "../../services/users";
+import { addUser, deleteUser, getUser, getUsers} from "../../services/users";
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
+
+export const getUsersController = async (req: Request, res: Response) => {
+  const { login, password } = req.body
+  try {
+    const result = await getUsers(login as string, password as string);
+    res.status(200).send({ error: false ,result});
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: error });
+  }
+};
 
 export const getUserController = async (req: Request, res: Response) => {
   const { login, password } = req.body
 
   try {
     const result = await getUser(login as string, password as string);
-    
+
     if (result.length === 0) {
       	res.status(200).send({ error: true, user: [] });
 		}
