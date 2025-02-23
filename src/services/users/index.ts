@@ -1,6 +1,12 @@
 import { executeSQLQuery } from "../../database";
 import bcrypt from "bcrypt";
 
+export const getUsers = async (login: string, password: string) => {
+    const query = `SELECT * FROM public.users`;
+    const result = await executeSQLQuery(query);
+    return result.rows;
+};
+
 export const getUser = async (login: string, password: string) => {
     const query = `SELECT * FROM public."userTable" WHERE login='${login}'`;
     
