@@ -1,5 +1,5 @@
 import express from "express";
-import { getUsersController,addUserController, deleteUserController, getUserController } from "../../controllers/users";
+import { getUsersController,addUserController, deleteUserController, getUserController,loginUserController } from "../../controllers/users";
 
 
 const router = express.Router();
@@ -60,29 +60,24 @@ router.route("/users").get(getUsersController);
  *           schema:
  *             type: object
  *             properties:
- *               login:
+ *            
+ *               id:
  *                 type: string
  *                 example: "user123"
  *                 required: true
- *               password:
- *                 type: string
- *                 example: "password123"
- *                 required: true
- *               phone:
- *                 type: number
- *                 example: "12354"
- *                 required: false
- *               gender:
- *                 type: string
- *                 example: "male"
- *                 required: true
- *               registerType:
- *                 type: string
- *                 example: "male"
- *                 required: true
  *               name:
  *                 type: string
- *                 example: "x"
+ *                 example: "souhail"
+ *                 required: true
+ *  
+ *               email:
+ *                 type: string
+ *                 example: "souhail@email.com"
+ *                 required: true
+ *             
+ *               password:
+ *                 type: string
+ *                 example: "DontHackme"
  *                 required: true
  *     responses:
  *       200:
@@ -132,9 +127,9 @@ router.route("/addUser").post(addUserController);
  *           schema:
  *             type: object
  *             properties:
- *               login:
+ *               email:
  *                 type: string
- *                 example: "user123"
+ *                 example: "souhail@gmail.com"
  *                 required: true
  *               password:
  *                 type: string
@@ -172,7 +167,7 @@ router.route("/addUser").post(addUserController);
  *                   type: string
  *                   example: "Internal server error"
  */
-router.route("/login").post(getUserController);
+router.route("/login").post(loginUserController);
 
 /**
  * @swagger
