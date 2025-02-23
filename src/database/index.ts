@@ -7,9 +7,10 @@ export const pool = new Pool({
   process.env.DB_URL,
 });
 
-export async function executeSQLQuery(SQL: string): Promise<QueryResult<any>> {
+export async function executeSQLQuery(SQL: string,   values: any[] = []
+): Promise<QueryResult<any>> {
   return new Promise<QueryResult>((resolve, reject) => {
-    pool.query(SQL, (error, result) => {
+    pool.query(SQL,values , (error, result) => {
       if (error) {
         return reject(error);
       } else {
