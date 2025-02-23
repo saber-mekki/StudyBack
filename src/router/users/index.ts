@@ -1,8 +1,49 @@
 import express from "express";
-import { addUserController, deleteUserController, getUserController } from "../../controllers/users";
+import { getUsersController,addUserController, deleteUserController, getUserController } from "../../controllers/users";
 
 
 const router = express.Router();
+
+
+/**
+ * @swagger
+ * /users:
+ *   get:
+ *     summary: get a the list of users
+ *     tags: [User]
+ *     parameters:
+ *        - in: query
+ *          name: userId
+ *          required: false
+ *          schema:
+ *            type: string
+ *        - in: query
+ *          name: email
+ *          required: false
+ *          schema:
+ *            type: string
+ *        - in: query
+ *          name: psw
+ *          required: false
+ *          schema:
+ *            type: string
+ *     responses:
+ *       200:
+ *         description: ok
+ *         content:
+ *           application/json:
+ *             schema:
+ *                type: object
+ *       500:
+ *         description: error
+ *         content:
+ *           application/json:
+ *             schema:
+ *                type: object
+ *
+ *
+ */
+router.route("/users").get(getUsersController);
 
 
 /**
