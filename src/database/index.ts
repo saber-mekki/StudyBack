@@ -2,10 +2,9 @@ import { Pool, QueryResult } from "pg";
 import env from "dotenv";
 
 env.config();
-
 export const pool = new Pool({
 	connectionString:
-		"postgres://postgres:0000@148.113.182.116:5432/postgres",
+  process.env.DB_URL,
 });
 
 export async function executeSQLQuery(SQL: string): Promise<QueryResult<any>> {
