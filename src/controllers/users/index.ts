@@ -1,6 +1,25 @@
-import { addUser, deleteUser, getUser, getUsers} from "../../services/users";
+import { addUser, deleteUser, getUser, getUsers,loginUser} from "../../services/users";
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
+import { error } from "console";
+
+
+export const loginUserController = async (req:Request , res:Response ) => {
+const {email , password }=req.body 
+try{
+const result =await loginUser(email as string , password as string ) ; 
+
+res.status(200).send({error:false , result});
+}
+catch(error){
+  console.log(error) ;
+  return res.status(404).json({ error: "User not found" });
+}
+return res.status(500).json({ error: "Internal Server Error" });
+
+
+
+}
 
 export const getUsersController = async (req: Request, res: Response) => {
   const { login, password } = req.body
@@ -42,21 +61,21 @@ export const getUserController = async (req: Request, res: Response) => {
 };
 
 export const addUserController = async (req: Request, res: Response) => {
-  const { login, password, phone, gender, name, registerType } = req.body;
+  const { id, name, email, password } = req.body;
   try {
  
     await addUser(
-			login as string,
+/* 			id as string,
+ */			name as string,
+			email as string,
 			password as string,
-			phone as number,
-			gender as string,
-			name as string,
-			registerType as string,
+      
+
 		);
-    res.status(200).send({ error: false });
+    res.status(200).send({ error: false ,"message": "User added successfully" });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ error: error });
+    return res.status(500).json({ error: "Internal server error " });
   }
 };
 
@@ -65,9 +84,9 @@ export const deleteUserController = async (req: Request, res: Response) => {
   const { login } = req.query;
   try {
     await deleteUser(login as string);
-    res.status(200).send("ok");
+    res.status(200).send("User deleted successfully");
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ error: error });
+    return res.status(404).json({ error: "user not found" });
   }
 };
