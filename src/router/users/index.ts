@@ -1,5 +1,5 @@
 import express from "express";
-import { getUsersController,addUserController, deleteUserController, getUserController,loginUserController } from "../../controllers/users";
+import { getUsersController,addUserController, deleteUserController, getUserController,loginUserController,  CheckUserExistController} from "../../controllers/users";
 
 
 const router = express.Router();
@@ -215,6 +215,60 @@ router.route("/login").post(loginUserController);
  *                   example: "Internal server error"
  */
 router.route("/deleteUser").delete(deleteUserController);
+
+
+/**
+ * @swagger
+ * /checkEmail:
+ *   post:
+ *     summary: Check if the email exists
+ *     tags: [User]
+ *     requestBody:
+ *       description: Request to check if the email exists in the database
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: "souhail@gmail.com"
+ *                 required: true
+ *     responses:
+ *       200:
+ *         description: Email check result
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 exists:
+ *                   type: boolean
+ *                   example: true  # or false if the email does not exist
+ *       404:
+ *         description: Not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Email not found"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Internal server error"
+ */
+
+router.route("/checkEmail").post(CheckUserExistController);
 
 
 
