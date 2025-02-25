@@ -5,6 +5,9 @@ import registerMiddlewares from "./middlewares";
 
 const app: Application = express();
 
+const cors = require('cors');
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+
 registerMiddlewares(app);
 registerRouter(app);
 
