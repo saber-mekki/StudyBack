@@ -3,26 +3,28 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { error } from "console";
 
-
 export const loginUserController = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   try {
-    const result = await loginUser(email as string, password as string);
-
-    return res.status(200).send({ error: false, result });
+    const result = await loginUser(email, password);
+    return res.status(200).send({ error: false, result }); 
   } catch (error: unknown) {
-    console.log(error);
+    console.log(error); 
 
     if (error instanceof Error) {
-      if (error.message === 'User not found') {
-        return res.status(404).json({ error: "User not found" });
+      if (error.message === 'Invalid email or password') {
+        return res.status(404).json({ error: "Invalid email " });
       }
-      return res.status(500).json({ error: "Internal Server Error" });
+      if (error.message === 'Invalid password') {
+        return res.status(401).json({ error: "Invalid password" });
+      }
     }
 
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 export const getUsersController = async (req: Request, res: Response) => {
   const { login, password } = req.body
@@ -101,14 +103,11 @@ export const CheckUserExistController = async (req:Request, res:Response) => {
       const emailExists = await checkUser(email);  // This checks if the email is already in the database
 
       if (emailExists) {
-          // Email exists, return true for exists
           return res.status(200).json({ exists: true });
       } else {
-          // Email does not exist, return false for exists
           return res.status(200).json({ exists: false });
       }
   } catch (err) {
-      // Handle errors
       return res.status(500).json({ error: 'Internal server error' });
   }
 };
