@@ -1,25 +1,28 @@
-import { addUser, deleteUser, getUser, getUsers,loginUser} from "../../services/users";
+import { addUser, deleteUser, getUser, getUsers,loginUser,checkUser} from "../../services/users";
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { error } from "console";
 
 
-export const loginUserController = async (req:Request , res:Response ) => {
-const {email , password }=req.body 
-try{
-const result =await loginUser(email as string , password as string ) ; 
+export const loginUserController = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
 
-res.status(200).send({error:false , result});
-}
-catch(error){
-  console.log(error) ;
-  return res.status(404).json({ error: "User not found" });
-}
-return res.status(500).json({ error: "Internal Server Error" });
+  try {
+    const result = await loginUser(email as string, password as string);
 
+    return res.status(200).send({ error: false, result });
+  } catch (error: unknown) {
+    console.log(error);
 
+    if (error instanceof Error) {
+      if (error.message === 'User not found') {
+        return res.status(404).json({ error: "User not found" });
+      }
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
 
-}
+  }
+};
 
 export const getUsersController = async (req: Request, res: Response) => {
   const { login, password } = req.body
@@ -88,5 +91,24 @@ export const deleteUserController = async (req: Request, res: Response) => {
   } catch (error) {
     console.log(error);
     return res.status(404).json({ error: "user not found" });
+  }
+};
+
+export const CheckUserExistController = async (req:Request, res:Response) => {
+  const { email } = req.body;
+  
+  try {
+      const emailExists = await checkUser(email);  // This checks if the email is already in the database
+
+      if (emailExists) {
+          // Email exists, return true for exists
+          return res.status(200).json({ exists: true });
+      } else {
+          // Email does not exist, return false for exists
+          return res.status(200).json({ exists: false });
+      }
+  } catch (err) {
+      // Handle errors
+      return res.status(500).json({ error: 'Internal server error' });
   }
 };
