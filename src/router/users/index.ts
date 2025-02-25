@@ -1,5 +1,5 @@
 import express from "express";
-import { getUsersController,addUserController, deleteUserController, loginController } from "../../controllers/users";
+import { getUsersController,addUserController, deleteUserController, loginController,getRefreshTokenController,deleteRefreshTokenController } from "../../controllers/users";
 import { authenticateToken } from "../../helpers";
 
 
@@ -10,41 +10,61 @@ const router = express.Router();
  * @swagger
  * /users:
  *   get:
- *     summary: get a the list of users
+ *     summary: Get a list of users
  *     tags: [User]
+ *     security:
+ *       - bearerAuth: []  # Requires authentication
  *     parameters:
- *        - in: query
- *          name: userId
- *          required: false
- *          schema:
- *            type: string
- *        - in: query
- *          name: email
- *          required: false
- *          schema:
- *            type: string
- *        - in: query
- *          name: psw
- *          required: false
- *          schema:
- *            type: string
+ *       - in: query
+ *         name: userId
+ *         required: false
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: email
+ *         required: false
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: psw
+ *         required: false
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
- *         description: ok
+ *         description: OK
  *         content:
  *           application/json:
  *             schema:
- *                type: object
+ *               type: object
+ *       401:
+ *         description: Unauthorized - No token provided
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Null token"
+ *       403:
+ *         description: Forbidden - Invalid token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Invalid or expired token"
  *       500:
- *         description: error
+ *         description: Internal Server Error
  *         content:
  *           application/json:
  *             schema:
- *                type: object
- *
- *
+ *               type: object
  */
-router.route("/users").get(getUsersController);
+router.route("/users").get(authenticateToken,getUsersController);
 
 // router.get("/users", authenticateToken, getUsersController);
 
@@ -215,6 +235,69 @@ router.route("/login").post(loginController);
  */
 router.route("/deleteUser").delete(deleteUserController);
 
+
+
+/**
+ * @swagger
+ * /refresh_token:
+ *   get:
+ *     summary: Refresh authentication token
+ *     tags: [Auth]
+ *     description: Retrieves a new access token using the refresh token stored in cookies.
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully refreshed tokens
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 accessToken:
+ *                   type: string
+ *                   example: "new-access-token"
+ *                 refreshToken:
+ *                   type: string
+ *                   example: "new-refresh-token"
+ *       401:
+ *         description: Unauthorized - No refresh token provided
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "No refresh token found in cookies"
+ *       403:
+ *         description: Forbidden - Invalid or expired refresh token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Invalid refresh token"
+ */
+router.route("/refresh_token").get(getRefreshTokenController);
+
+
+/**
+ * @swagger
+ * /refresh_token:
+ *   delete:
+ *     summary: Delete refresh token
+ *     tags: [Auth]
+ *     description: Removes the refresh token from cookies.
+ *     responses:
+ *       200:
+ *         description: Successfully deleted refresh token
+ *       401:
+ *         description: Unauthorized - Error while deleting token
+ */
+router.route("/refresh_token").delete(deleteRefreshTokenController);
 
 
 export default router;

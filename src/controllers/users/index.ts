@@ -1,4 +1,4 @@
-import { addUser, deleteUser, login, getUsers} from "../../services/users";
+import { addUser, deleteUser, login, getUsers,refreshAccessTokenService,deleteRefreshTokenService} from "../../services/users";
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { jwtTokens } from '../../helpers/index';
@@ -34,12 +34,9 @@ export const loginController = async (req: Request, res: Response) => {
   const { email, password } = req.body
   try {
     const result = await login(email as string, password as string);
-
     console.log({result})
     let tokens = jwtTokens(result.user_id, result.user_name, result.user_email);
-    console.log({tokens})
     res.cookie('refresh_token', tokens.refreshToken, {...(process.env.COOKIE_DOMAIN && {domain: process.env.COOKIE_DOMAIN}) , httpOnly: true,sameSite: 'none', secure: true});
-
     res.status(200).send({ error: false ,tokens});
   } catch (Error :any) {
     return res.status(500).json({ error: Error.message });
@@ -55,5 +52,25 @@ export const deleteUserController = async (req: Request, res: Response) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: error });
+  }
+};
+
+export const getRefreshTokenController = async (req: Request, res: Response) => {
+  
+  try {
+    
+    const tokens = await refreshAccessTokenService(req);
+    res.json(tokens);
+  } catch (error:any) {
+    res.status(error.status || 500).json({ error: error.message });
+  }
+};
+
+export const deleteRefreshTokenController = async (req: Request, res: Response) => {
+  try {
+    deleteRefreshTokenService(res);
+    res.status(200).json({ message: "Refresh token deleted." });
+  } catch (error:any) {
+    res.status(500).json({ error: error.message });
   }
 };
