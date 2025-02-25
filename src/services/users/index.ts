@@ -52,7 +52,7 @@ export const deleteUser = async (email: string) => {
 export const loginUser = async(email:string,password:string) =>{
     const query = `SELECT user_email, user_password FROM public."users" WHERE user_email = $1`;
     const result=await executeSQLQuery(query,[email])
-    if(result.rows[0]==0){
+    if(result.rows.length==0){
         throw new Error("Invalid email or password");
 
     }
@@ -72,3 +72,14 @@ export const loginUser = async(email:string,password:string) =>{
       return {  token  };
 
 }
+export const checkUser =async(email:string)=>{
+
+  const query = 'SELECT user_email FROM public."users" WHERE user_email = $1';
+  const result = await executeSQLQuery(query, [email]);
+  
+  if (result.rows.length > 0) {
+      return true;  // Email exists
+  }
+  return false;  // Email does not exist
+};
+
