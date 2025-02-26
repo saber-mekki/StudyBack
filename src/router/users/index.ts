@@ -47,7 +47,6 @@ const router = express.Router();
  */
 router.route("/users").get(getUsersController);
 
-
 /**
  * @swagger
  * /addUser:
@@ -61,26 +60,28 @@ router.route("/users").get(getUsersController);
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - id
+ *               - name
+ *               - email
+ *               - password
+ *               - type_register
  *             properties:
- *            
  *               id:
  *                 type: string
  *                 example: "user123"
- *                 required: true
  *               name:
  *                 type: string
  *                 example: "souhail"
- *                 required: true
- *  
  *               email:
  *                 type: string
  *                 example: "souhail@email.com"
- *                 required: true
- *             
  *               password:
  *                 type: string
  *                 example: "DontHackme"
- *                 required: true
+ *               type_register:
+ *                 type: string
+ *                 example: "student"
  *     responses:
  *       200:
  *         description: User added successfully
@@ -114,6 +115,7 @@ router.route("/users").get(getUsersController);
  *                   example: "Internal server error"
  */
 router.route("/addUser").post(addUserController);
+
 
 /**
  * @swagger
