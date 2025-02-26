@@ -45,7 +45,7 @@ const router = express.Router();
  *
  *
  */
-router.route("/users").get(getUsersController);
+router.route("/users").get(authenticateToken,getUsersController);
 
 /**
  * @swagger
