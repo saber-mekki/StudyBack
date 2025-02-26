@@ -18,17 +18,17 @@ export const getUser = async (login: string, password: string) => {
     return result.rows;
 };
 
-export const addUser = async (name: string, email: string, password: string) => {
+export const addUser = async (name: string, email: string, password: string ,type_register:string) => {
   const saltRounds = 10;
   const hashedPassword = await bcrypt.hash(password, saltRounds);
 
   const id = uuidv4();
 
   const query = `
-    INSERT INTO public."users"(user_id, user_name, user_email, user_password) 
-    VALUES ($1, $2, $3, $4) RETURNING *`;
+    INSERT INTO public."users"(user_id, user_name, user_email, user_password,type_register) 
+    VALUES ($1, $2, $3, $4,$5) RETURNING *`;
   
-  const values = [id, name, email, hashedPassword];
+  const values = [id, name, email, hashedPassword,type_register];
 
   const result = await executeSQLQuery(query, values);
   return result.rows[0];
@@ -51,7 +51,7 @@ export const deleteUser = async (email: string) => {
 
 
 export const loginUser = async(email:string,password:string) =>{
-    const query = `SELECT user_email, user_password FROM public."users" WHERE user_email = $1`;
+    const query = `SELECT user_email, user_password,type_register FROM public."users" WHERE user_email = $1`;
     const result=await executeSQLQuery(query,[email])
     if(result.rows.length==0){
         throw new Error("Invalid email or password");
@@ -83,7 +83,7 @@ export const checkUser =async(email:string)=>{
 
 export const refreshAccessTokenService = async (req: any) => {
   const cookies = req.headers.cookie;
- 
+  
   const refreshToken = cookies
   .split("; ")
   .find((c:any) => c.startsWith("refresh_token="))
