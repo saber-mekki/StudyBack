@@ -2,6 +2,7 @@ import { executeSQLQuery } from "../../database";
 import jwt from 'jsonwebtoken'; 
 import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
+import { jwtTokens } from '../../helpers/index';
 
 
 export const getUsers = async (login: string, password: string) => {
@@ -63,13 +64,9 @@ export const loginUser = async(email:string,password:string) =>{
         throw new Error("Invalid password");
 
     }
-    const token = jwt.sign(
-        {  email: user.user_email },
-        process.env.JWT_SECRET as string,
-            { expiresIn: "1h" } 
-        );
+   
      
-      return {  token  };
+      return  result.rows[0];
 
 }
 export const checkUser =async(email:string)=>{
@@ -83,3 +80,28 @@ export const checkUser =async(email:string)=>{
   return false;  // Email does not exist
 };
 
+
+export const refreshAccessTokenService = async (req: any) => {
+  const cookies = req.headers.cookie;
+ 
+  const refreshToken = cookies
+  .split("; ")
+  .find((c:any) => c.startsWith("refresh_token="))
+  ?.split("=")[1];
+
+
+  if (!refreshToken) throw { status: 401, message: "Unauthorized - No refresh token provided" };
+
+  return new Promise((resolve, reject) => {
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET || "", (error: any, user: any) => {
+      if (error) return reject({ status: 403, message: "Forbidden - Invalid refresh token" });
+
+      const tokens = jwtTokens( user.user_id, user.user_name, user.user_email);
+      resolve(tokens);
+    });
+  });
+};
+
+export const deleteRefreshTokenService = (res: any) => {
+  res.clearCookie("refresh_token");
+};

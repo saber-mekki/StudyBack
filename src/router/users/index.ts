@@ -1,5 +1,7 @@
 import express from "express";
-import { getUsersController,addUserController, deleteUserController, getUserController,loginUserController, CheckUserExistController} from "../../controllers/users";
+import { getUsersController,addUserController, deleteUserController, getUserController,
+    deleteRefreshTokenController,getRefreshTokenController,loginUserController, CheckUserExistController} from "../../controllers/users";
+    import { authenticateToken } from "../../helpers";
 
 
 const router = express.Router();
@@ -270,6 +272,66 @@ router.route("/deleteUser").delete(deleteUserController);
 
 router.route("/checkEmail").post(CheckUserExistController);
 
+/**
+ * @swagger
+ * /refresh_token:
+ *   get:
+ *     summary: Refresh authentication token
+ *     tags: [Auth]
+ *     description: Retrieves a new access token using the refresh token stored in cookies.
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully refreshed tokens
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 accessToken:
+ *                   type: string
+ *                   example: "new-access-token"
+ *                 refreshToken:
+ *                   type: string
+ *                   example: "new-refresh-token"
+ *       401:
+ *         description: Unauthorized - No refresh token provided
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "No refresh token found in cookies"
+ *       403:
+ *         description: Forbidden - Invalid or expired refresh token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Invalid refresh token"
+ */
+router.route("/refresh_token").get(getRefreshTokenController);
 
+
+/**
+ * @swagger
+ * /refresh_token:
+ *   delete:
+ *     summary: Delete refresh token
+ *     tags: [Auth]
+ *     description: Removes the refresh token from cookies.
+ *     responses:
+ *       200:
+ *         description: Successfully deleted refresh token
+ *       401:
+ *         description: Unauthorized - Error while deleting token
+ */
+router.route("/refresh_token").delete(deleteRefreshTokenController);
 
 export default router;

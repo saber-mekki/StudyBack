@@ -1,16 +1,19 @@
-import { addUser, deleteUser, getUser, getUsers,loginUser,checkUser} from "../../services/users";
+import { addUser, deleteUser, getUser, getUsers,loginUser,checkUser,refreshAccessTokenService,deleteRefreshTokenService} from "../../services/users";
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { error } from "console";
+import { jwtTokens } from '../../helpers/index';
 
 export const loginUserController = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   try {
-    const result = await loginUser(email, password);
-    return res.status(200).send({ error: false, result }); 
+    const result = await loginUser(email as string,  password as string);
+    let tokens = jwtTokens(result.user_id, result.user_name, result.user_email);
+    res.cookie('refresh_token', tokens.refreshToken, {...(process.env.COOKIE_DOMAIN && {domain: process.env.COOKIE_DOMAIN}) , httpOnly: true,sameSite: 'none', secure: true});
+
+    return res.status(200).send({ error: false, result,tokens }); 
   } catch (error: unknown) {
-    console.log(error); 
 
     if (error instanceof Error) {
       if (error.message === 'Invalid email or password') {
@@ -24,6 +27,8 @@ export const loginUserController = async (req: Request, res: Response) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+
 
 
 export const getUsersController = async (req: Request, res: Response) => {
@@ -66,7 +71,7 @@ export const getUserController = async (req: Request, res: Response) => {
 };
 
 export const addUserController = async (req: Request, res: Response) => {
-  const { id, name, email, password } = req.body;
+  const { id, name, email, password,type_register } = req.body;
   try {
  
     await addUser(
@@ -74,7 +79,7 @@ export const addUserController = async (req: Request, res: Response) => {
  */			name as string,
 			email as string,
 			password as string,
-      
+      type_register as string 
 
 		);
     res.status(200).send({ error: false ,"message": "User added successfully" });
@@ -109,5 +114,25 @@ export const CheckUserExistController = async (req:Request, res:Response) => {
       }
   } catch (err) {
       return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+ 
+export const getRefreshTokenController = async (req: Request, res: Response) => {
+  
+  try {
+    
+    const tokens = await refreshAccessTokenService(req);
+    res.json(tokens);
+  } catch (error:any) {
+    res.status(error.status || 500).json({ error: error.message });
+  }
+};
+
+export const deleteRefreshTokenController = async (req: Request, res: Response) => {
+  try {
+    deleteRefreshTokenService(res);
+    res.status(200).json({ message: "Refresh token deleted." });
+  } catch (error:any) {
+    res.status(500).json({ error: error.message });
   }
 };
