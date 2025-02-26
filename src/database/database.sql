@@ -8,6 +8,8 @@ CREATE TABLE users(
   user_name TEXT NOT NULL,
   user_email TEXT NOT NULL UNIQUE,
   user_password TEXT NOT NULL
+  type_register TEXT CHECK (type_register IN ('student', 'tutor')) NOT NULL
+
 );
 
 SELECT * FROM users;
