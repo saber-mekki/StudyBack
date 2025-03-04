@@ -1,7 +1,7 @@
 import { addUser, deleteUser, getUser, getUsers,loginUser,checkUser,refreshAccessTokenService,deleteRefreshTokenService} from "../../services/users";
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
-import { error } from "console";
+
 import { jwtTokens } from '../../helpers/index';
 
 export const loginUserController = async (req: Request, res: Response) => {
@@ -27,9 +27,6 @@ export const loginUserController = async (req: Request, res: Response) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
-
-
 
 export const getUsersController = async (req: Request, res: Response) => {
   const { login, password } = req.body
@@ -89,7 +86,6 @@ export const addUserController = async (req: Request, res: Response) => {
   }
 };
 
-
 export const deleteUserController = async (req: Request, res: Response) => {
   const { login } = req.query;
   try {
@@ -105,7 +101,7 @@ export const CheckUserExistController = async (req:Request, res:Response) => {
   const { email } = req.body;
   
   try {
-      const emailExists = await checkUser(email);  // This checks if the email is already in the database
+      const emailExists = await checkUser(email);
 
       if (emailExists) {
           return res.status(200).json({ exists: true });
