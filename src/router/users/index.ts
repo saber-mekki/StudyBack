@@ -1,11 +1,17 @@
 import express from "express";
-import { getUsersController,addUserController, deleteUserController, getUserController,
-    deleteRefreshTokenController,getRefreshTokenController,loginUserController, CheckUserExistController} from "../../controllers/users";
-    import { authenticateToken } from "../../helpers";
-
+import {
+  getUsersController,
+  addUserController,
+  deleteUserController,
+  getUserController,
+  deleteRefreshTokenController,
+  getRefreshTokenController,
+  loginUserController,
+  CheckUserExistController,
+} from "../../controllers/users";
+import { authenticateToken } from "../../helpers";
 
 const router = express.Router();
-
 
 /**
  * @swagger
@@ -45,7 +51,7 @@ const router = express.Router();
  *
  *
  */
-router.route("/users").get(authenticateToken,getUsersController);
+router.route("/users").get(authenticateToken, getUsersController);
 
 /**
  * @swagger
@@ -66,6 +72,8 @@ router.route("/users").get(authenticateToken,getUsersController);
  *               - email
  *               - password
  *               - type_register
+ *               - phone_number
+ *               - gender
  *             properties:
  *               id:
  *                 type: string
@@ -82,6 +90,13 @@ router.route("/users").get(authenticateToken,getUsersController);
  *               type_register:
  *                 type: string
  *                 example: "student"
+ *               phone_number:
+ *                 type: string
+ *                 example: "+1234567890"
+ *               gender:
+ *                 type: string
+ *                 example: "male"
+ *
  *     responses:
  *       200:
  *         description: User added successfully
@@ -114,8 +129,8 @@ router.route("/users").get(authenticateToken,getUsersController);
  *                   type: string
  *                   example: "Internal server error"
  */
-router.route("/addUser").post(addUserController);
 
+router.route("/addUser").post(addUserController);
 
 /**
  * @swagger
@@ -220,7 +235,6 @@ router.route("/login").post(loginUserController);
  */
 router.route("/deleteUser").delete(deleteUserController);
 
-
 /**
  * @swagger
  * /checkEmail:
@@ -319,7 +333,6 @@ router.route("/checkEmail").post(CheckUserExistController);
  *                   example: "Invalid refresh token"
  */
 router.route("/refresh_token").get(getRefreshTokenController);
-
 
 /**
  * @swagger
