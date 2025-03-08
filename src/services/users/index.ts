@@ -18,17 +18,17 @@ export const getUser = async (login: string, password: string) => {
   return result.rows;
 };
 
-export const addUser = async (name: string, email: string, password: string ,type_register:string) => {
+export const addUser = async (name: string, email: string, password: string ,type_register:string,phone_number:string , gender :string) => {
   const saltRounds = 10;
   const hashedPassword = await bcrypt.hash(password, saltRounds);
 
   const id = uuidv4();
 
   const query = `
-    INSERT INTO public."users"(user_id, user_name, user_email, user_password,type_register) 
-    VALUES ($1, $2, $3, $4,$5) RETURNING *`;
-
-  const values = [id, name, email, hashedPassword,type_register];
+    INSERT INTO public."users"(user_id, user_name, user_email, user_password,type_register,phone_number,gender) 
+    VALUES ($1, $2, $3, $4,$5,$6,$7) RETURNING *`;
+  
+  const values = [id, name, email, hashedPassword,type_register,phone_number,gender];
 
   const result = await executeSQLQuery(query, values);
   return result.rows[0];
