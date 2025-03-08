@@ -68,7 +68,7 @@ export const getUserController = async (req: Request, res: Response) => {
 };
 
 export const addUserController = async (req: Request, res: Response) => {
-  const { id, name, email, password,type_register } = req.body;
+  const { id, name, email, password,type_register,phone_number, gender} = req.body;
   try {
  
     await addUser(
@@ -76,7 +76,10 @@ export const addUserController = async (req: Request, res: Response) => {
  */			name as string,
 			email as string,
 			password as string,
-      type_register as string 
+      type_register as string ,
+      phone_number as string ,
+      gender as string
+      
 
 		);
     res.status(200).send({ error: false ,"message": "User added successfully" });
@@ -101,7 +104,7 @@ export const CheckUserExistController = async (req:Request, res:Response) => {
   const { email } = req.body;
   
   try {
-      const emailExists = await checkUser(email);
+      const emailExists = await checkUser(email);  
 
       if (emailExists) {
           return res.status(200).json({ exists: true });
