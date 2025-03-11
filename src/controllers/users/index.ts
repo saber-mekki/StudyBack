@@ -1,4 +1,5 @@
-import { addUser, deleteUser, getUser, getUsers,loginUser,checkUser,refreshAccessTokenService,deleteRefreshTokenService} from "../../services/users";
+import { addUser, deleteUser, getUser, getUsers,
+  loginUser,checkUser,refreshAccessTokenService,deleteRefreshTokenService,updatePassword} from "../../services/users";
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 
@@ -28,13 +29,34 @@ export const loginUserController = async (req: Request, res: Response) => {
   }
 };
 
+
+
+export const updatePasswordController = async (req: Request, res: Response) => {
+  const { email, newPassword } = req.body;
+
+ 
+  try {
+    const hashedPassword = await bcrypt.hash(newPassword, 10); // 10 = salt rounds
+
+    const result = await updatePassword(email as string, hashedPassword);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "User not found or password not updated." });
+    }
+
+    return res.status(200).json({ message: "Password updated successfully." });
+  } catch (error) {
+    console.error("Error updating password:", error);
+    return res.status(500).json({ error: "Internal server error." });
+  }
+};
+
 export const getUsersController = async (req: Request, res: Response) => {
   const { login, password } = req.body
   try {
     const result = await getUsers(login as string, password as string);
     res.status(200).send({ error: false ,result});
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ error: error });
   }
 };

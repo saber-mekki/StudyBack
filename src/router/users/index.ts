@@ -8,6 +8,7 @@ import {
   getRefreshTokenController,
   loginUserController,
   CheckUserExistController,
+  updatePasswordController
 } from "../../controllers/users";
 import { authenticateToken } from "../../helpers";
 
@@ -131,6 +132,75 @@ router.route("/users").get(authenticateToken, getUsersController);
  */
 
 router.route("/addUser").post(addUserController);
+/**
+ * @swagger
+ * /updatePassword:
+ *   post:
+ *     summary: Update user password
+ *     tags: [User]
+ *     requestBody:
+ *       description: User email and new password
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - newPassword
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: "souhail@email.com"
+ *               newPassword:
+ *                 type: string
+ *                 example: "NewSecurePassword123"
+ *
+ *     responses:
+ *       200:
+ *         description: Password updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Password updated successfully"
+ *       400:
+ *         description: Bad request (Invalid input)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Invalid request data"
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "User not found"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Internal server error"
+ */
+
+router.route("/updatePassword").post(updatePasswordController);
+
 
 /**
  * @swagger

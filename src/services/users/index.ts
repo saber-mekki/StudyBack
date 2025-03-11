@@ -47,30 +47,48 @@ export const deleteUser = async (email: string) => {
   return result.rows[0];
 };
 
-export const loginUser = async (email: string, password: string) => {
-  const query = `SELECT user_email, user_password,type_register FROM public."users" WHERE user_email = $1`;
-  const result = await executeSQLQuery(query, [email])
-  if (result.rows.length == 0) {
-    throw new Error("Invalid email or password");
+
+export const updatePassword = async (email: string, newPassword: string) => {
+  try {
+
+      const query = `UPDATE public."users" SET user_password = $2 WHERE user_email = $1`;
+      
+      const result = await executeSQLQuery(query, [email, newPassword]);
+
+      return result; 
+  } catch (error) {
+      console.error("Error updating password:", error);
+      throw error; 
   }
-  const user = result.rows[0];
+};
 
-  const isMatch = await bcrypt.compare(password, user.user_password)
-  if (!isMatch) {
-    throw new Error("Invalid password");
+export const loginUser = async(email:string,password:string) =>{
+    const query = `SELECT user_email, user_password,type_register ,user_name FROM public."users" WHERE user_email = $1`;
+    const result=await executeSQLQuery(query,[email])
+    if(result.rows.length==0){
+        throw new Error("Invalid email or password");
 
-  }
+    }
+    const user=result.rows[0];
+    
+    const isMatch=await bcrypt.compare(password,user.user_password) 
+    if(!isMatch){
+        throw new Error("Invalid password");
 
-  return result.rows[0];
+    }
+   
+     
+      return  result.rows[0];
 
 }
+
 export const checkUser = async (email: string) => {
   const query = 'SELECT user_email FROM public."users" WHERE user_email = $1';
   const result = await executeSQLQuery(query, [email]);
   if (result.rows.length > 0) {
-    return true; 
+      return true;  
   }
-  return false;
+  return false;  
 };
 
 
