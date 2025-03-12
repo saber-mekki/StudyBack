@@ -61,34 +61,28 @@ export const getUsersController = async (req: Request, res: Response) => {
   }
 };
 
+
+
 export const getUserController = async (req: Request, res: Response) => {
-  const { login, password } = req.body
+  const { email } = req.body; 
 
   try {
-    const result = await getUser(login as string, password as string);
+    const result = await getUser(email as string);
 
-    if (result.length === 0) {
-      	res.status(200).send({ error: true, user: [] });
-		}
+    if (!result || result.length === 0) {
+      return res.status(404).json({ error: true, message: "User not found" });
+    }
 
-		const user = result[0];
-		const match = await bcrypt.compare(password, user.password);
+    // Remove sensitive data before sending the response
+    const { password, ...userData } = result[0];
 
-		if (match) {
-      let error = result[0] === undefined ? true : false;
-			res.status(200).send({ error: error, user: user });
-        console.log({ user });
-			return user;
-    
-		} else {
-			res.status(200).send({ error: true, user: [] });
-		}
-    
+    return res.status(200).json({ error: false, user: userData });
+
   } catch (error) {
-  	res.status(200).send({ error: true, user: [] });
+    console.error("Error in getUserController:", error);
+    return res.status(500).json({ error: true, message: "Internal server error" });
   }
 };
-
 export const addUserController = async (req: Request, res: Response) => {
   const { id, name, email, password,type_register,phone_number, gender} = req.body;
   try {

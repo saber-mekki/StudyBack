@@ -53,6 +53,75 @@ const router = express.Router();
  *
  */
 router.route("/users").get(authenticateToken, getUsersController);
+/**
+ * @swagger
+ * /getUser:
+ *   post:
+ *     summary: Get User by Email
+ *     tags: [User]
+ *     requestBody:
+ *       description: Retrieve user details by email
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: "ex@gmail.com"
+ *     responses:
+ *       200:
+ *         description: User details retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: boolean
+ *                   example: false
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       example: 1
+ *                     email:
+ *                       type: string
+ *                       example: "ex@gmail.com"
+ *                     username:
+ *                       type: string
+ *                       example: "JohnDoe"
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "User not found"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Internal server error"
+ */
+router.route("/getUser").post(getUserController);
+
 
 /**
  * @swagger

@@ -11,10 +11,11 @@ export const getUsers = async (login: string, password: string) => {
   return result.rows;
 };
 
-export const getUser = async (login: string, password: string) => {
-  const query = `SELECT * FROM public."userTable" WHERE login='${login}'`;
+export const getUser = async (email: string) => {
+  const query = `SELECT user_id, user_name, user_email, type_register, phone_number, gender FROM public.users WHERE user_email = $1`;
+  const values = [email]; 
 
-  const result = await executeSQLQuery(query);
+  const result = await executeSQLQuery(query, values);
   return result.rows;
 };
 
