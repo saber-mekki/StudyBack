@@ -1,5 +1,5 @@
 import { addUser, deleteUser, getUser, getUsers,
-  loginUser,checkUser,refreshAccessTokenService,deleteRefreshTokenService,updatePassword} from "../../services/users";
+  loginUser,checkUser,refreshAccessTokenService,deleteRefreshTokenService,updatePassword,updateUser} from "../../services/users";
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 
@@ -31,25 +31,37 @@ export const loginUserController = async (req: Request, res: Response) => {
 
 
 
-export const updatePasswordController = async (req: Request, res: Response) => {
-  const { email, newPassword } = req.body;
+export const UpadateUserController = async (req: Request, res: Response) => {
+  const { name, email, type_register, phone_number, newEmail, gender } = req.body;
 
- 
   try {
-    const hashedPassword = await bcrypt.hash(newPassword, 10); // 10 = salt rounds
+    const result = await updateUser(
+      
+      name as string,
+      email as string,
+      type_register as string,
+      phone_number as string,
+      gender as string,
+      newEmail as string
+    );
 
-    const result = await updatePassword(email as string, hashedPassword);
+    const updatedEmail = newEmail || email;
+    const tokens = jwtTokens(result.user_id, result.user_name, updatedEmail);
 
-    if (result.rowCount === 0) {
-      return res.status(404).json({ error: "User not found or password not updated." });
-    }
+    res.cookie("refresh_token", tokens.refreshToken, {
+      ...(process.env.COOKIE_DOMAIN && { domain: process.env.COOKIE_DOMAIN }),
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+    });
 
-    return res.status(200).json({ message: "Password updated successfully." });
-  } catch (error) {
-    console.error("Error updating password:", error);
-    return res.status(500).json({ error: "Internal server error." });
+    return res.status(200).json({ error: false, message: "User updated successfully", tokens });
+
+  } catch (error: unknown) {
+    return res.status(500).json({ error: "Internal Server Error", message: (error as Error).message });
   }
 };
+
 
 export const getUsersController = async (req: Request, res: Response) => {
   const { login, password } = req.body
@@ -73,7 +85,6 @@ export const getUserController = async (req: Request, res: Response) => {
       return res.status(404).json({ error: true, message: "User not found" });
     }
 
-    // Remove sensitive data before sending the response
     const { password, ...userData } = result[0];
 
     return res.status(200).json({ error: false, user: userData });
@@ -83,27 +94,49 @@ export const getUserController = async (req: Request, res: Response) => {
     return res.status(500).json({ error: true, message: "Internal server error" });
   }
 };
-export const addUserController = async (req: Request, res: Response) => {
-  const { id, name, email, password,type_register,phone_number, gender} = req.body;
-  try {
- 
-    await addUser(
-/* 			id as string,
- */			name as string,
-			email as string,
-			password as string,
-      type_register as string ,
-      phone_number as string ,
-      gender as string
-      
 
-		);
-    res.status(200).send({ error: false ,"message": "User added successfully" });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({ error: "Internal server error " });
+
+export const updatePasswordController = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+
+  try {
+    const existingUser = await checkUser(email as string);
+    if (!existingUser) {
+      return res.status(404).json({ error: true, message: "User not found" });
+    }
+
+    await updatePassword(email as string, password as string);
+
+    return res.status(200).json({ error: false, message: "Password updated successfully" });
+  } catch (error: unknown) {
+    return res.status(500).json({ error: "Internal Server Error", message: (error as Error).message });
   }
 };
+
+
+
+
+    export const addUserController = async (req: Request, res: Response) => {
+      const { id, name, email, password,type_register,phone_number, gender} = req.body;
+      try {
+    
+        await addUser(
+    /* 			id as string,
+    */			name as string,
+          email as string,
+          password as string,
+          type_register as string ,
+          phone_number as string ,
+          gender as string
+          
+
+        );
+        res.status(200).send({ error: false ,"message": "User added successfully" });
+      } catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: "Internal server error " });
+      }
+    };
 
 export const deleteUserController = async (req: Request, res: Response) => {
   const { login } = req.query;

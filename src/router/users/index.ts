@@ -8,7 +8,8 @@ import {
   getRefreshTokenController,
   loginUserController,
   CheckUserExistController,
-  updatePasswordController
+  updatePasswordController,
+  UpadateUserController
 } from "../../controllers/users";
 import { authenticateToken } from "../../helpers";
 
@@ -121,6 +122,78 @@ router.route("/users").get(authenticateToken, getUsersController);
  *                   example: "Internal server error"
  */
 router.route("/getUser").post(getUserController);
+/**
+ * @swagger
+ * /updateUser:
+ *   post:
+ *     summary: Update User Details
+ *     tags: [User]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: "John Doe"
+ *               email:
+ *                 type: string
+ *                 example: "johndoe@example.com"
+ *               newEmail:
+ *                 type: string
+ *                 example: "newjohn@example.com"
+ *               type_register:
+ *                 type: string
+ *                 example: "student"
+ *               phone_number:
+ *                 type: string
+ *                 example: "123456789"
+ *               gender:
+ *                 type: string
+ *                 example: "male"
+ *     responses:
+ *       200:
+ *         description: User updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: boolean
+ *                   example: false
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     user_name:
+ *                       type: string
+ *                       example: "John Doe"
+ *                     user_email:
+ *                       type: string
+ *                       example: "johndoe@example.com"
+ *                     newEmail:
+ *                       type: string
+ *                       example: "newjohn@example.com"
+ *                     type_register:
+ *                       type: string
+ *                       example: "student"
+ *                     phone_number:
+ *                       type: string
+ *                       example: "123456789"
+ *                     gender:
+ *                       type: string
+ *                       example: "male"
+ *       400:
+ *         description: Invalid request data
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
+ */
+router.route("/updateUser").post(UpadateUserController);
+
 
 
 /**
@@ -220,8 +293,8 @@ router.route("/addUser").post(addUserController);
  *             properties:
  *               email:
  *                 type: string
- *                 example: "souhail@email.com"
- *               newPassword:
+ *                 example: "ex@email.com"
+ *               password:
  *                 type: string
  *                 example: "NewSecurePassword123"
  *

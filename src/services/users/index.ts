@@ -34,6 +34,31 @@ export const addUser = async (name: string, email: string, password: string ,typ
   const result = await executeSQLQuery(query, values);
   return result.rows[0];
 };
+export const updateUser = async (
+  name: string,
+  email: string,
+  type_register: string,
+  phone_number: string,
+  gender: string ,
+  newEmail:  String 
+) => {
+  const query = `
+    UPDATE public.users 
+    SET 
+    user_name = $1, 
+    type_register = $2, 
+    phone_number = $3, 
+    gender = $4,
+    user_email=$5
+    WHERE user_email = $6
+    RETURNING *;
+  `;
+
+  const values = [name, type_register, phone_number, gender, newEmail,email];
+
+  const result = await executeSQLQuery(query, values);
+  return result.rows[0];
+};
 
 export const deleteUser = async (email: string) => {
   const query = `
@@ -49,19 +74,21 @@ export const deleteUser = async (email: string) => {
 };
 
 
+
 export const updatePassword = async (email: string, newPassword: string) => {
   try {
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-      const query = `UPDATE public."users" SET user_password = $2 WHERE user_email = $1`;
-      
-      const result = await executeSQLQuery(query, [email, newPassword]);
+    const query = `UPDATE public."users" SET user_password = $2 WHERE user_email = $1`;
+    const result = await executeSQLQuery(query, [email, hashedPassword]);
 
-      return result; 
+    return result;
   } catch (error) {
-      console.error("Error updating password:", error);
-      throw error; 
+    console.error("Error updating password:", error);
+    throw error;
   }
 };
+
 
 export const loginUser = async(email:string,password:string) =>{
     const query = `SELECT user_email, user_password,type_register ,user_name FROM public."users" WHERE user_email = $1`;
