@@ -9,7 +9,7 @@ import {
   loginUserController,
   CheckUserExistController,
   updatePasswordController,
-  UpadateUserController
+  UpadateUserController,
 } from "../../controllers/users";
 import { authenticateToken } from "../../helpers";
 
@@ -122,6 +122,9 @@ router.route("/users").get(authenticateToken, getUsersController);
  *                   example: "Internal server error"
  */
 router.route("/getUser").post(getUserController);
+
+
+
 /**
  * @swagger
  * /updateUser:
@@ -153,6 +156,10 @@ router.route("/getUser").post(getUserController);
  *               gender:
  *                 type: string
  *                 example: "male"
+ *               date_of_birth:
+ *                 type: string
+ *                 example: "2000-01-01"
+ * 
  *     responses:
  *       200:
  *         description: User updated successfully
@@ -185,16 +192,17 @@ router.route("/getUser").post(getUserController);
  *                     gender:
  *                       type: string
  *                       example: "male"
+ *                     date_of_birth:
+ *                       type: string
+ *                       example: "2000-01-01"
  *       400:
  *         description: Invalid request data
  *       404:
  *         description: User not found
  *       500:
  *         description: Internal server error
- */
+ */   
 router.route("/updateUser").post(UpadateUserController);
-
-
 
 /**
  * @swagger
@@ -342,7 +350,6 @@ router.route("/addUser").post(addUserController);
  */
 
 router.route("/updatePassword").post(updatePasswordController);
-
 
 /**
  * @swagger
