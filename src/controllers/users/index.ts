@@ -45,17 +45,12 @@ export const UpadateUserController = async (req: Request, res: Response) => {
       newEmail as string
     );
 
-    const updatedEmail = newEmail || email;
-    const tokens = jwtTokens(result.user_id, result.user_name, updatedEmail);
+    let tokens = jwtTokens(result.user_id, result.user_name, result.user_email);
+    res.cookie('refresh_token', tokens.refreshToken, {...(process.env.COOKIE_DOMAIN && {domain: process.env.COOKIE_DOMAIN}) , httpOnly: true,sameSite: 'none', secure: true});
 
-    res.cookie("refresh_token", tokens.refreshToken, {
-      ...(process.env.COOKIE_DOMAIN && { domain: process.env.COOKIE_DOMAIN }),
-      httpOnly: true,
-      sameSite: "none",
-      secure: true,
-    });
+    return res.status(200).send({ error: false, result,tokens }); 
+    
 
-    return res.status(200).json({ error: false, message: "User updated successfully", tokens });
 
   } catch (error: unknown) {
     return res.status(500).json({ error: "Internal Server Error", message: (error as Error).message });
