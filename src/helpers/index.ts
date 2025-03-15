@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import env from "dotenv";
+import AWS from "aws-sdk";
 
 env.config();
 
@@ -22,3 +23,16 @@ export function authenticateToken(req:any, res:any, next:any) {
     });
   }
   
+
+export const s3 = new AWS.S3({
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    region: process.env.AWS_REGION,
+});
+
+export const uploadParams = (file:any) => ({
+    Bucket: process.env.AWS_BUCKET_NAME,
+    Key: `videos/${Date.now()}-${file.originalname}`,
+    Body: file.buffer,
+    ContentType: file.mimetype,
+});

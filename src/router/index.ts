@@ -5,6 +5,7 @@ import swaggerUI from "swagger-ui-express";
 
 import users from "./users";
 import courses from "./courses";
+import upload from "./video";
 
 export default (app: Application) => {
   const options = {
@@ -49,5 +50,5 @@ export default (app: Application) => {
     res.json({ message: "API Running ! " });
   });
 
-  app.use("/api/v1/", [users,courses]);
+  app.use("/api/v1/", [users,courses,upload]);
 };
