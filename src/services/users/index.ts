@@ -120,7 +120,7 @@ export const updatePassword = async (email: string, newPassword: string) => {
 };
 
 export const loginUser = async (email: string, password: string) => {
-  const query = `SELECT user_email, user_password,type_register ,user_name FROM public."users" WHERE user_email = $1`;
+  const query = `SELECT user_id ,user_email, user_password,type_register ,user_name FROM public."users" WHERE user_email = $1`;
   const result = await executeSQLQuery(query, [email]);
   if (result.rows.length == 0) {
     throw new Error("Invalid email or password");
