@@ -54,6 +54,13 @@ CREATE TABLE tutors (
   is_active BOOLEAN DEFAULT TRUE 
 );
 
+CREATE TABLE videos (
+  id SERIAL PRIMARY KEY,
+   user_id UUID NOT NULL,
+  video_url TEXT NOT NULL,
+  uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 
 SELECT * FROM users;
 
