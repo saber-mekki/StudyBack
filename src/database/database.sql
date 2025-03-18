@@ -38,9 +38,8 @@ CREATE TABLE users(
   user_password TEXT NOT NULL,
   type_register TEXT CHECK (type_register IN ('student', 'tutor','admin')) NOT NULL
   phone_number TEXT,  
-  gender TEXT CHECK (gender IN ('male', 'female')) 
+  gender TEXT CHECK (gender IN ('male', 'female')) ,
     date_of_birth DATE
-
 );
 CREATE TABLE tutors (
   tutor_email TEXT PRIMARY KEY REFERENCES users(user_email) ON DELETE CASCADE,
@@ -59,6 +58,17 @@ CREATE TABLE videos (
    user_id UUID NOT NULL,
   video_url TEXT NOT NULL,
   uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+CREATE TABLE live_sessions (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  tutor_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+  student_id UUID REFERENCES users(user_id) ON DELETE CASCADE,
+  room VARCHAR(50) NOT NULL UNIQUE,
+  invite_link TEXT NOT NULL,
+  start_time TIMESTAMP DEFAULT NOW(),
+  end_time TIMESTAMP
 );
 
 
