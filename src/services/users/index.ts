@@ -168,4 +168,35 @@ export const refreshAccessTokenService = async (req: any) => {
 
 export const deleteRefreshTokenService = (res: any) => {
   res.clearCookie("refresh_token");
+}
+export const CreateCourse = async (
+  title: string,
+  category: string,
+  price: number,
+  description: string,
+  image: string,
+  tutor: string,
+  date: string
+) => {
+  const id = uuidv4(); 
+  const query = `
+    INSERT INTO public."courses" (id, title, category, price, description, image, tutor, date)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+RETURNING *;
+
+  `;
+
+  const values = [
+    id,
+    title,
+    category,
+    price,
+    description,
+    image,
+    tutor,
+    date,
+  ];
+
+  const result = await executeSQLQuery(query, values);
+  return result.rows[0]; 
 };

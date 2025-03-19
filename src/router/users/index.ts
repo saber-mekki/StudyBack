@@ -10,6 +10,7 @@ import {
   CheckUserExistController,
   updatePasswordController,
   UpadateUserController,
+  CreateCourseController
 } from "../../controllers/users";
 import { authenticateToken } from "../../helpers";
 
@@ -567,5 +568,110 @@ router.route("/refresh_token").get(getRefreshTokenController);
  *         description: Unauthorized - Error while deleting token
  */
 router.route("/refresh_token").delete(deleteRefreshTokenController);
+
+/**
+ * @swagger
+ * /CreateCourse:
+ *   post:
+ *     summary: Create a new course
+ *     tags: [Course]
+ *     requestBody:
+ *       description: Course details to create a new course
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *               - category
+ *               - price
+ *               - description
+ *               - image
+ *               - tutor
+ *               - date
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: "Introduction to React"
+ *               category:
+ *                 type: string
+ *                 example: "Frontend Development"
+ *               price:
+ *                 type: number
+ *                 format: float
+ *                 example: 49.99
+ *               description:
+ *                 type: string
+ *                 example: "Learn the basics of React in this comprehensive course."
+ *               image:
+ *                 type: string
+ *                 example: "https://example.com/react-course-image.jpg"
+ *               tutor:
+ *                 type: string
+ *                 example: "Tutor 1"
+ *               date:
+ *                 type: string
+ *                 format: date
+ *                 example: "2025-04-01"
+ * 
+ *     responses:
+ *       201:
+ *         description: Course created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 course_id:
+ *                   type: string
+ *                   example: "d8f1a8d0-1b2f-4f75-b6c3-d497e2fc93f1"
+ *                 title:
+ *                   type: string
+ *                   example: "Introduction to React"
+ *                 category:
+ *                   type: string
+ *                   example: "Frontend Development"
+ *                 price:
+ *                   type: number
+ *                   format: float
+ *                   example: 49.99
+ *                 description:
+ *                   type: string
+ *                   example: "Learn the basics of React in this comprehensive course."
+ *                 image:
+ *                   type: string
+ *                   example: "https://example.com/react-course-image.jpg"
+ *                 tutor:
+ *                   type: string
+ *                   example: "John Doe"
+ *                 date:
+ *                   type: string
+ *                   format: date
+ *                   example: "2025-04-01"
+ *       400:
+ *         description: Bad request (e.g., missing or invalid parameters)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Invalid input"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Internal server error"
+ */
+
+
+router.route("/CreateCourse").post(CreateCourseController);
 
 export default router;

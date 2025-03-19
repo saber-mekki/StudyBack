@@ -9,6 +9,7 @@ import {
   deleteRefreshTokenService,
   updatePassword,
   updateUser,
+  CreateCourse
 } from "../../services/users";
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
@@ -154,6 +155,27 @@ export const addUserController = async (req: Request, res: Response) => {
     return res.status(500).json({ error: "Internal server error " });
   }
 };
+export const CreateCourseController = async (req: Request, res: Response) => {
+  const {  title, category, price, description, image, tutor, date } = req.body;
+
+  try {
+    await CreateCourse(
+      
+      title as string,
+      category as string,
+      price as number,
+      description as string,
+      image as string,
+      tutor as string, 
+      date as string,
+    );
+
+    res.status(201).json({ message: 'Course created successfully!' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating course', error });
+  }
+};
+
 
 export const deleteUserController = async (req: Request, res: Response) => {
   const { login } = req.query;
@@ -205,3 +227,4 @@ export const deleteRefreshTokenController = async (
     res.status(500).json({ error: error.message });
   }
 };
+
