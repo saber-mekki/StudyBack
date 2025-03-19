@@ -200,3 +200,9 @@ RETURNING *;
   const result = await executeSQLQuery(query, values);
   return result.rows[0]; 
 };
+export const GetAllCourses = async () => {
+  
+    const result = await executeSQLQuery("SELECT * FROM courses");
+    return result; 
+  
+};

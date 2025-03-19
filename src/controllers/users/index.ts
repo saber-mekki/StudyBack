@@ -9,7 +9,8 @@ import {
   deleteRefreshTokenService,
   updatePassword,
   updateUser,
-  CreateCourse
+  CreateCourse,
+  GetAllCourses
 } from "../../services/users";
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
@@ -175,7 +176,19 @@ export const CreateCourseController = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Error creating course', error });
   }
 };
+export const GetAllCoursesController = async (req: Request, res: Response) => {
+  try {
+    const result = await GetAllCourses()
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "No courses found." });
+    }
 
+    res.status(200).json({ courses: result.rows });
+  } catch (error) {
+    console.error("Error fetching courses:", error);
+    res.status(500).json({ message: "Error fetching courses", error });
+  }
+};
 
 export const deleteUserController = async (req: Request, res: Response) => {
   const { login } = req.query;

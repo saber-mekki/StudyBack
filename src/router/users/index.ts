@@ -10,7 +10,8 @@ import {
   CheckUserExistController,
   updatePasswordController,
   UpadateUserController,
-  CreateCourseController
+  CreateCourseController,
+  GetAllCoursesController
 } from "../../controllers/users";
 import { authenticateToken } from "../../helpers";
 
@@ -673,5 +674,65 @@ router.route("/refresh_token").delete(deleteRefreshTokenController);
 
 
 router.route("/CreateCourse").post(CreateCourseController);
+
+
+
+/**
+ * @swagger
+ * /GetAllCourses:
+ *   get:
+ *     summary: Get all courses
+ *     tags: [Course]
+ *     responses:
+ *       200:
+ *         description: A list of courses
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   course_id:
+ *                     type: string
+ *                     example: "d8f1a8d0-1b2f-4f75-b6c3-d497e2fc93f1"
+ *                   title:
+ *                     type: string
+ *                     example: "Introduction to React"
+ *                   category:
+ *                     type: string
+ *                     example: "Frontend Development"
+ *                   price:
+ *                     type: number
+ *                     format: float
+ *                     example: 49.99
+ *                   description:
+ *                     type: string
+ *                     example: "Learn the basics of React in this comprehensive course."
+ *                   image:
+ *                     type: string
+ *                     example: "https://example.com/react-course-image.jpg"
+ *                   tutor:
+ *                     type: string
+ *                     example: "John Doe"
+ *                   date:
+ *                     type: string
+ *                     format: date
+ *                     example: "2025-04-01"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Internal server error"
+ */
+
+router.route("/GetAllCourses").get(GetAllCoursesController);
+
+
 
 export default router;
