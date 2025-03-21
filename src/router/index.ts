@@ -19,7 +19,7 @@ export default (app: Application) => {
       },
       servers: [
         {
-          url: "http://localhost:" + process.env.PORT + "/api/v1",
+          url:  process.env.API_URL + "/api/v1",
         },
       ],
       components: {
