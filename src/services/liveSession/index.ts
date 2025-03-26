@@ -1,5 +1,6 @@
 import { executeSQLQuery } from "../../database";
 import { v4 as uuidv4 } from "uuid";
+import { s3, uploadParams } from "../../helpers/index";
 
 const startSession = async (tutorId: any) => {
   if (!tutorId) {
@@ -43,6 +44,16 @@ const joinSession = async (studentId: any, room: string) => {
 };
 
 
-export {joinSession, startSession, getSessions, endSession };
+const uploadVideoToS3 = async (file:any) => {
+  try {
+    const uploadResult = await s3.upload(uploadParams(file) as any).promise();
+    return { success: true, url: uploadResult.Location };
+  } catch (error) {
+    console.error("AWS Upload Error:", error);
+    throw new Error("Upload failed");
+  }
+};
+
+export {uploadVideoToS3,joinSession, startSession, getSessions, endSession };
 
 
