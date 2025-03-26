@@ -169,6 +169,7 @@ export const refreshAccessTokenService = async (req: any) => {
 export const deleteRefreshTokenService = (res: any) => {
   res.clearCookie("refresh_token");
 }
+
 export const CreateCourse = async (
   title: string,
   category: string,
@@ -176,14 +177,19 @@ export const CreateCourse = async (
   description: string,
   image: string,
   tutor: string,
-  date: string
+  date: string,
+  level: string,
+  duration: string,
+  language: string,
+  syllabus: string,
+  requirements: string
 ) => {
-  const id = uuidv4(); 
+  const id = uuidv4();
   const query = `
-    INSERT INTO public."courses" (id, title, category, price, description, image, tutor, date)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-RETURNING *;
-
+    INSERT INTO public."courses" 
+    (id, title, category, price, description, image, tutor, date, level, duration, language, syllabus, requirements)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+    RETURNING *;
   `;
 
   const values = [
@@ -195,11 +201,17 @@ RETURNING *;
     image,
     tutor,
     date,
+    level,
+    duration,
+    language,
+    syllabus,
+    requirements
   ];
 
   const result = await executeSQLQuery(query, values);
-  return result.rows[0]; 
+  return result.rows[0];
 };
+
 export const GetAllCourses = async () => {
   
     const result = await executeSQLQuery("SELECT * FROM courses");

@@ -10,7 +10,7 @@ import {
   updatePassword,
   updateUser,
   CreateCourse,
-  GetAllCourses
+  GetAllCourses,
 } from "../../services/users";
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
@@ -157,28 +157,45 @@ export const addUserController = async (req: Request, res: Response) => {
   }
 };
 export const CreateCourseController = async (req: Request, res: Response) => {
-  const {  title, category, price, description, image, tutor, date } = req.body;
+  const {
+    title,
+    category,
+    price,
+    description,
+    image,
+    tutor,
+    date,
+    level,
+    duration,
+    language,
+    syllabus,
+    requirements,
+  } = req.body;
 
   try {
     await CreateCourse(
-      
       title as string,
       category as string,
       price as number,
       description as string,
       image as string,
-      tutor as string, 
+      tutor as string,
       date as string,
+      level as string,
+      duration as string,
+      language as string,
+      syllabus as string,
+      requirements as string
     );
 
-    res.status(201).json({ message: 'Course created successfully!' });
+    res.status(201).json({ message: "Course created successfully!" });
   } catch (error) {
-    res.status(500).json({ message: 'Error creating course', error });
+    res.status(500).json({ message: "Error creating course", error });
   }
 };
 export const GetAllCoursesController = async (req: Request, res: Response) => {
   try {
-    const result = await GetAllCourses()
+    const result = await GetAllCourses();
     if (result.rows.length === 0) {
       return res.status(404).json({ message: "No courses found." });
     }
@@ -240,4 +257,3 @@ export const deleteRefreshTokenController = async (
     res.status(500).json({ error: error.message });
   }
 };
-

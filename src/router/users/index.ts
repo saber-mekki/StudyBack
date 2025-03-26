@@ -591,6 +591,11 @@ router.route("/refresh_token").delete(deleteRefreshTokenController);
  *               - image
  *               - tutor
  *               - date
+ *               - level
+ *               - duration
+ *               - language
+ *               - syllabus
+ *               - requirements
  *             properties:
  *               title:
  *                 type: string
@@ -610,12 +615,26 @@ router.route("/refresh_token").delete(deleteRefreshTokenController);
  *                 example: "https://example.com/react-course-image.jpg"
  *               tutor:
  *                 type: string
- *                 example: "Tutor 1"
+ *                 example: "John Doe"
  *               date:
  *                 type: string
  *                 format: date
  *                 example: "2025-04-01"
- * 
+ *               level:
+ *                 type: string
+ *                 example: "Beginner"
+ *               duration:
+ *                 type: string
+ *                 example: "4 weeks"
+ *               language:
+ *                 type: string
+ *                 example: "English"
+ *               syllabus:
+ *                 type: string
+ *                 example: "React basics, component structure, hooks, and state management."
+ *               requirements:
+ *                 type: string
+ *                 example: "Basic knowledge of JavaScript"
  *     responses:
  *       201:
  *         description: Course created successfully
@@ -650,6 +669,21 @@ router.route("/refresh_token").delete(deleteRefreshTokenController);
  *                   type: string
  *                   format: date
  *                   example: "2025-04-01"
+ *                 level:
+ *                   type: string
+ *                   example: "Beginner"
+ *                 duration:
+ *                   type: string
+ *                   example: "4 weeks"
+ *                 language:
+ *                   type: string
+ *                   example: "English"
+ *                 syllabus:
+ *                   type: string
+ *                   example: "React basics, component structure, hooks, and state management."
+ *                 requirements:
+ *                   type: string
+ *                   example: "Basic knowledge of JavaScript"
  *       400:
  *         description: Bad request (e.g., missing or invalid parameters)
  *         content:
@@ -672,8 +706,8 @@ router.route("/refresh_token").delete(deleteRefreshTokenController);
  *                   example: "Internal server error"
  */
 
-
 router.route("/CreateCourse").post(CreateCourseController);
+
 
 
 

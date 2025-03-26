@@ -9,7 +9,14 @@ CREATE TABLE courses (
     description TEXT NOT NULL,
     image VARCHAR(255),
     tutor VARCHAR(255) NOT NULL,
-    date DATE NOT NULL
+    date DATE NOT NULL,
+        level VARCHAR(50) NOT NULL DEFAULT 'Beginner',
+    duration VARCHAR(50) NOT NULL DEFAULT 'Unknown',
+    language VARCHAR(50) NOT NULL DEFAULT 'English',
+    syllabus TEXT NOT NULL DEFAULT '',
+    requirements TEXT NOT NULL DEFAULT '',
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
 );
 
 CREATE TABLE courses_pdf (
