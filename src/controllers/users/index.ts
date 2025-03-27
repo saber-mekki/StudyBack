@@ -9,11 +9,8 @@ import {
   deleteRefreshTokenService,
   updatePassword,
   updateUser,
-  CreateCourse,
-  GetAllCourses,
 } from "../../services/users";
 import { Request, Response } from "express";
-import bcrypt from "bcryptjs";
 
 import { jwtTokens } from "../../helpers/index";
 
@@ -154,56 +151,6 @@ export const addUserController = async (req: Request, res: Response) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "Internal server error " });
-  }
-};
-export const CreateCourseController = async (req: Request, res: Response) => {
-  const {
-    title,
-    category,
-    price,
-    description,
-    image,
-    tutor,
-    date,
-    level,
-    duration,
-    language,
-    syllabus,
-    requirements,
-  } = req.body;
-
-  try {
-    await CreateCourse(
-      title as string,
-      category as string,
-      price as number,
-      description as string,
-      image as string,
-      tutor as string,
-      date as string,
-      level as string,
-      duration as string,
-      language as string,
-      syllabus as string,
-      requirements as string
-    );
-
-    res.status(201).json({ message: "Course created successfully!" });
-  } catch (error) {
-    res.status(500).json({ message: "Error creating course", error });
-  }
-};
-export const GetAllCoursesController = async (req: Request, res: Response) => {
-  try {
-    const result = await GetAllCourses();
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "No courses found." });
-    }
-
-    res.status(200).json({ courses: result.rows });
-  } catch (error) {
-    console.error("Error fetching courses:", error);
-    res.status(500).json({ message: "Error fetching courses", error });
   }
 };
 
