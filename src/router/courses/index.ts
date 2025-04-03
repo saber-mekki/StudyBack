@@ -32,6 +32,7 @@ const router = express.Router();
  *               - language
  *               - syllabus
  *               - requirements
+ *               - tutor_email
  *             properties:
  *               title:
  *                 type: string
@@ -71,6 +72,9 @@ const router = express.Router();
  *               requirements:
  *                 type: string
  *                 example: "Basic knowledge of JavaScript"
+ *               tutor_email:
+ *                 type: string
+ *                 example: "sou@gmail.com"
  *     responses:
  *       201:
  *         description: Course created successfully

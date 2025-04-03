@@ -2,6 +2,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE DATABASE education;
 CREATE TABLE courses (
+     tutor_email VARCHAR(255) PRIMARY KEY,
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     category VARCHAR(255) NOT NULL,
@@ -10,13 +11,16 @@ CREATE TABLE courses (
     image VARCHAR(255),
     tutor VARCHAR(255) NOT NULL,
     date DATE NOT NULL,
-        level VARCHAR(50) NOT NULL DEFAULT 'Beginner',
+    level VARCHAR(50) NOT NULL DEFAULT 'Beginner',
     duration VARCHAR(50) NOT NULL DEFAULT 'Unknown',
     language VARCHAR(50) NOT NULL DEFAULT 'English',
     syllabus TEXT NOT NULL DEFAULT '',
     requirements TEXT NOT NULL DEFAULT '',
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
+        CONSTRAINT fk_tutor FOREIGN KEY (tutor_email) REFERENCES users(email) ON DELETE CASCADE
+
+
 );
 
 CREATE TABLE courses_pdf (

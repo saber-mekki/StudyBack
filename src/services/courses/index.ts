@@ -15,13 +15,15 @@ export const CreateCourse = async (
     duration: string,
     language: string,
     syllabus: string,
-    requirements: string
+    requirements: string,
+    tutor_email :string 
+
   ) => {
     const id = uuidv4();
     const query = `
       INSERT INTO public."courses" 
-      (id, title, category, price, description, image, tutor, date, level, duration, language, syllabus, requirements)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+      (id, title, category, price, description, image, tutor, date, level, duration, language, syllabus, requirements,tutor_email)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13,$14)
       RETURNING *;
     `;
   
@@ -38,7 +40,9 @@ export const CreateCourse = async (
       duration,
       language,
       syllabus,
-      requirements
+      requirements,
+      tutor_email 
+
     ];
   
     const result = await executeSQLQuery(query, values);

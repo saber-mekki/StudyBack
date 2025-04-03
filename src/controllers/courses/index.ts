@@ -16,6 +16,8 @@ export const CreateCourseController = async (req: Request, res: Response) => {
       language,
       syllabus,
       requirements,
+      tutor_email,
+
     } = req.body;
 
     if (!title || !category || !price) {
@@ -34,7 +36,9 @@ export const CreateCourseController = async (req: Request, res: Response) => {
       duration,
       language,
       syllabus,
-      requirements
+      requirements,
+      tutor_email,
+
     );
 
     res.status(201).json({ message: "Course created successfully!" });
