@@ -1,9 +1,9 @@
 
-import { v4 as uuidv4 } from "uuid";
 
 import { executeSQLQuery } from "../../database";
 
 export const CreateCourse = async (
+  id:string,
     title: string,
     category: string,
     price: number,
@@ -19,7 +19,6 @@ export const CreateCourse = async (
     tutor_email :string 
 
   ) => {
-    const id = uuidv4();
     const query = `
       INSERT INTO public."courses" 
       (id, title, category, price, description, image, tutor, date, level, duration, language, syllabus, requirements,tutor_email)
@@ -55,3 +54,17 @@ export const CreateCourse = async (
       return result; 
     
   };
+
+  export const CreatePDF = async (courseId: number, pdfUrl: string) => {
+
+    const query = `
+      INSERT INTO course_pdfs (course_id, pdf_url)
+      VALUES ($1, $2)
+      RETURNING id, course_id, pdf_url;
+    `;
+    const values = [courseId, pdfUrl];
+  
+    const result =await executeSQLQuery(query,values)
+    return result.rows[0];
+  };
+  
