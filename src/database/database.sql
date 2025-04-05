@@ -23,9 +23,9 @@ CREATE TABLE courses (
 
 );
 
-CREATE TABLE courses_pdf (
+CREATE TABLE course_pdfs (
     id SERIAL PRIMARY KEY,
-    course_id INT NOT NULL,
+    course_id UUID NOT NULL,  
     pdf_url VARCHAR(255) NOT NULL,
     FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
 );
