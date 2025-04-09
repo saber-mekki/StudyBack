@@ -145,9 +145,7 @@ router.route("/getUser").post(getUserController);
  *               newEmail:
  *                 type: string
  *                 example: "newjohn@example.com"
- *               type_register:
- *                 type: string
- *                 example: "student"
+ *            
  *               phone_number:
  *                 type: string
  *                 example: "123456789"

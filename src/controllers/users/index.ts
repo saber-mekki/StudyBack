@@ -46,7 +46,6 @@ export const UpadateUserController = async (req: Request, res: Response) => {
   const {
     name,
     email,
-    type_register,
     phone_number,
     newEmail,
     gender,
@@ -57,7 +56,6 @@ export const UpadateUserController = async (req: Request, res: Response) => {
     const result = await updateUser(
       name as string,
       email as string,
-      type_register as string,
       phone_number as string,
       gender as string,
       newEmail as string,

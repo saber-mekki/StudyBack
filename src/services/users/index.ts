@@ -52,28 +52,25 @@ export const addUser = async (
 export const updateUser = async (
   name: string,
   email: string,
-  type_register: string,
   phone_number: string,
   gender: string,
-  newEmail: String,
+  newEmail: string,
   date_of_birth: string
 ) => {
   const query = `
     UPDATE public.users 
     SET 
     user_name = $1, 
-    type_register = $2, 
-    phone_number = $3, 
-    gender = $4,
-    user_email=$5,
-    date_of_birth=$6
-    WHERE user_email=$7
+    phone_number = $2, 
+    gender = $3,
+    user_email=$4,
+    date_of_birth=$5
+    WHERE user_email=$6
     RETURNING *;
   `;
 
   const values = [
     name,
-    type_register,
     phone_number,
     gender,
     newEmail,
