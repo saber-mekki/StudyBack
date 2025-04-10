@@ -167,3 +167,35 @@ export const deleteRefreshTokenService = (res: any) => {
   res.clearCookie("refresh_token");
 }
 
+export const addTutor = async (
+  tutor_email: string,
+  country: string,
+  price_per_hour: number,
+  specialty: string,
+  degree: string,
+  languages: string[],
+  availability: string
+) => {
+  try {
+    const query = `
+      INSERT INTO tutors (tutor_email, country, price_per_hour, specialty, degree, languages, availability)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+    `;
+    
+    // Execute the query
+    const result = await executeSQLQuery(query, [
+      tutor_email,
+      country,
+      price_per_hour,
+      specialty,
+      degree,
+      languages,
+      availability
+    ]);
+
+    return result;
+  } catch (error) {
+    console.error('Error adding tutor:', error);
+    throw error;
+  }
+};

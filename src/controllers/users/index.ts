@@ -9,6 +9,7 @@ import {
   deleteRefreshTokenService,
   updatePassword,
   updateUser,
+  addTutor
 } from "../../services/users";
 import { Request, Response } from "express";
 
@@ -199,5 +200,31 @@ export const deleteRefreshTokenController = async (
     res.status(200).json({ message: "Refresh token deleted." });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
+  }
+};
+export const addTutorDetails = async (req: Request, res: Response) => {
+  const { email, country, price_per_hour, specialty, degree, languages, availability } = req.body;
+
+  // Validate that required tutor fields are present
+  if (!email || !country || !price_per_hour || !specialty || !degree || !languages || !availability) {
+    return res.status(400).send({ error: true, message: "All tutor fields are required." });
+  }
+
+  try {
+    // Add tutor details to the tutors table
+    await addTutor(
+      email as string,
+      country as string,
+      price_per_hour as number,
+      specialty as string,
+      degree as string,
+      languages as string[],
+      availability as string
+    );
+
+    res.status(200).send({ error: false, message: "Tutor added successfully" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };

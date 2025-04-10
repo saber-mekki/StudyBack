@@ -10,6 +10,7 @@ import {
   CheckUserExistController,
   updatePasswordController,
   UpadateUserController,
+  addTutorDetails
 } from "../../controllers/users";
 import { authenticateToken } from "../../helpers";
 
@@ -563,5 +564,61 @@ router.route("/refresh_token").get(getRefreshTokenController);
  *         description: Unauthorized - Error while deleting token
  */
 router.route("/refresh_token").delete(deleteRefreshTokenController);
+/**
+ * @swagger
+ * /addTutor:
+ *   post:
+ *     summary: Add a new tutor
+ *     tags: [Tutor]
+ *     requestBody:
+ *       description: Tutor details including country, price per hour, specialty, degree, languages, and availability
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - country
+ *               - price_per_hour
+ *               - specialty
+ *               - degree
+ *               - languages
+ *               - availability
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: "tutor@email.com"
+ *               country:
+ *                 type: string
+ *                 example: "USA"
+ *               price_per_hour:
+ *                 type: number
+ *                 format: decimal
+ *                 example: 30.00
+ *               specialty:
+ *                 type: string
+ *                 example: "Math"
+ *               degree:
+ *                 type: string
+ *                 example: "PhD in Mathematics"
+ *               languages:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example: ["English", "Spanish"]
+ *               availability:
+ *                 type: string
+ *                 example: "Mon-Fri 9am-5pm"
+ *     responses:
+ *       200:
+ *         description: Tutor added successfully
+ *       400:
+ *         description: Bad request, missing required fields
+ *       500:
+ *         description: Internal server error
+ */
+
+router.route("/addTutor").post(addTutorDetails);
 
 export default router;
