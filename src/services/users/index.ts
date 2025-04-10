@@ -4,12 +4,22 @@ import { v4 as uuidv4 } from "uuid";
 
 import { executeSQLQuery } from "../../database";
 import { jwtTokens } from "../../helpers/index";
-
 export const getUsers = async () => {
-  const query = `SELECT * FROM public.users`;
-  const result = await executeSQLQuery(query);
-  return result.rows;
+  const query = `
+    SELECT u.*, t.country, t.price_per_hour, t.specialty, t.degree, t.languages, t.availability, t.rating ,t.is_active
+    FROM public.users u
+    LEFT JOIN public.tutors t ON u.user_email = t.tutor_email
+    WHERE u.type_register = 'tutor' OR u.type_register != 'tutor'
+  `;
+
+  try {
+    const result = await executeSQLQuery(query);
+    return result.rows;
+  } catch (error) {
+    throw new Error('Error fetching users: ' + error);
+  }
 };
+
 
 export const getUser = async (email: string) => {
   const query = `SELECT user_id, user_name, user_email,date_of_birth, type_register, phone_number, gender FROM public.users WHERE user_email = $1`;
@@ -182,7 +192,6 @@ export const addTutor = async (
       VALUES ($1, $2, $3, $4, $5, $6, $7)
     `;
     
-    // Execute the query
     const result = await executeSQLQuery(query, [
       tutor_email,
       country,
