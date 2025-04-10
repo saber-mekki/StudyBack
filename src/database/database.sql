@@ -42,6 +42,17 @@ CREATE TABLE users(
     date_of_birth DATE
 
 );
+CREATE TABLE tutors (
+  tutor_email TEXT PRIMARY KEY REFERENCES users(user_email) ON DELETE CASCADE,
+  country TEXT,
+  price_per_hour DECIMAL(10, 2),
+  specialty TEXT,
+  degree TEXT,
+  languages TEXT[], 
+  availability TEXT,  
+  rating DECIMAL(3, 2),  
+  is_active BOOLEAN DEFAULT TRUE 
+);
 
 
 SELECT * FROM users;
