@@ -53,7 +53,7 @@ const router = express.Router();
  *
  *
  */
-router.route("/users").get(authenticateToken, getUsersController);
+router.route("/users").get(getUsersController);
 /**
  * @swagger
  * /getUser:

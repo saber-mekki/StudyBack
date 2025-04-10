@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import { executeSQLQuery } from "../../database";
 import { jwtTokens } from "../../helpers/index";
 
-export const getUsers = async (login: string, password: string) => {
+export const getUsers = async () => {
   const query = `SELECT * FROM public.users`;
   const result = await executeSQLQuery(query);
   return result.rows;

@@ -80,9 +80,8 @@ export const UpadateUserController = async (req: Request, res: Response) => {
 };
 
 export const getUsersController = async (req: Request, res: Response) => {
-  const { login, password } = req.body;
   try {
-    const result = await getUsers(login as string, password as string);
+    const result = await getUsers();
     res.status(200).send({ error: false, result });
   } catch (error) {
     return res.status(500).json({ error: error });
