@@ -30,13 +30,12 @@ CREATE TABLE course_pdfs (
     FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
 );
 
-
 CREATE TABLE users(
   user_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_name TEXT NOT NULL,
   user_email TEXT NOT NULL UNIQUE,
   user_password TEXT NOT NULL,
-  type_register TEXT CHECK (type_register IN ('student', 'tutor','admin')) NOT NULL
+  type_register TEXT CHECK (type_register IN ('student', 'tutor','admin')) NOT NULL,
   phone_number TEXT,  
   gender TEXT CHECK (gender IN ('male', 'female')) ,
     date_of_birth DATE
@@ -71,6 +70,20 @@ CREATE TABLE live_sessions (
   end_time TIMESTAMP
 );
 
+CREATE TABLE messages (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  room VARCHAR(50) NOT NULL REFERENCES live_sessions(room) ON DELETE CASCADE,
+  sender VARCHAR(255) NOT NULL,
+  message TEXT NOT NULL,
+  sent_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE images (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  user_id UUID REFERENCES users(user_id) ON DELETE CASCADE,
+  image_url TEXT NOT NULL,
+  uploaded_at TIMESTAMP DEFAULT NOW()
+);
 
 SELECT * FROM users;
 
