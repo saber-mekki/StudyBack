@@ -9,7 +9,8 @@ import {
   deleteRefreshTokenService,
   updatePassword,
   updateUser,
-  addTutor
+  addTutor,
+  updateUserDetails
 } from "../../services/users";
 import { Request, Response } from "express";
 
@@ -44,14 +45,8 @@ export const loginUserController = async (req: Request, res: Response) => {
 };
 
 export const UpadateUserController = async (req: Request, res: Response) => {
-  const {
-    name,
-    email,
-    phone_number,
-    newEmail,
-    gender,
-    date_of_birth,
-  } = req.body;
+  const { name, email, phone_number, newEmail, gender, date_of_birth } =
+    req.body;
 
   try {
     const result = await updateUser(
@@ -203,15 +198,31 @@ export const deleteRefreshTokenController = async (
   }
 };
 export const addTutorDetails = async (req: Request, res: Response) => {
-  const { email, country, price_per_hour, specialty, degree, languages, availability } = req.body;
+  const {
+    email,
+    country,
+    price_per_hour,
+    specialty,
+    degree,
+    languages,
+    availability,
+  } = req.body;
 
-  // Validate that required tutor fields are present
-  if (!email || !country || !price_per_hour || !specialty || !degree || !languages || !availability) {
-    return res.status(400).send({ error: true, message: "All tutor fields are required." });
+  if (
+    !email ||
+    !country ||
+    !price_per_hour ||
+    !specialty ||
+    !degree ||
+    !languages ||
+    !availability
+  ) {
+    return res
+      .status(400)
+      .send({ error: true, message: "All tutor fields are required." });
   }
 
   try {
-    // Add tutor details to the tutors table
     await addTutor(
       email as string,
       country as string,
@@ -223,6 +234,23 @@ export const addTutorDetails = async (req: Request, res: Response) => {
     );
 
     res.status(200).send({ error: false, message: "Tutor added successfully" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const updateAcceuil = async (req: Request, res: Response) => {
+  const { email, bio, photo } = req.body;
+
+  if (!email) {
+    return res.status(400).send({ error: true, message: "Email is required" });
+  }
+
+  try {
+    await updateUserDetails(email, bio, photo);
+
+    return res.status(200).send({ error: false, message: "User updated successfully" });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "Internal server error" });
