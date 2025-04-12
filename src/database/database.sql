@@ -85,6 +85,22 @@ CREATE TABLE images (
   uploaded_at TIMESTAMP DEFAULT NOW()
 );
 
+CREATE TABLE tutor_availability (
+  id SERIAL PRIMARY KEY,
+  tutor_id INT NOT NULL,
+  available_date DATE NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+ALTER TABLE tutor_availability ADD COLUMN status VARCHAR(20) DEFAULT 'available';
+
+CREATE TABLE student_bookings (
+  id SERIAL PRIMARY KEY,
+  student_id INT NOT NULL,
+  tutor_id INT NOT NULL,
+  booking_date DATE NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 SELECT * FROM users;
 
 INSERT INTO users (user_name,user_email,user_password) VALUES ('test','test@test.com','test');

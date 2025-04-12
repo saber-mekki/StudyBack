@@ -8,6 +8,8 @@ import courses from "./courses";
 import upload from "./video";
 import liveSession from "./liveSession";
 import images from "./images";
+import studenBooking from "./calender/studentBooking";
+import tutorAvailability from "./calender/tutorAvailability";
 
 export default (app: Application) => {
   const options = {
@@ -52,5 +54,5 @@ export default (app: Application) => {
     res.json({ message: "API Running ! " });
   });
 
-  app.use("/api/v1/", [users,courses,upload,liveSession,images]);
+  app.use("/api/v1/", [users,courses,upload,liveSession,images,studenBooking,tutorAvailability]);
 };
