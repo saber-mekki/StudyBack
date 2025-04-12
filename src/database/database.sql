@@ -38,7 +38,10 @@ CREATE TABLE users(
   type_register TEXT CHECK (type_register IN ('student', 'tutor','admin')) NOT NULL,
   phone_number TEXT,  
   gender TEXT CHECK (gender IN ('male', 'female')) ,
-    date_of_birth DATE
+  date_of_birth DATE,
+  photo TEXT,  
+  bio TEXT
+
 );
 CREATE TABLE tutors (
   tutor_email TEXT PRIMARY KEY REFERENCES users(user_email) ON DELETE CASCADE,
