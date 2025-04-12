@@ -22,7 +22,7 @@ export const getUsers = async () => {
 
 
 export const getUser = async (email: string) => {
-  const query = `SELECT user_id, user_name, user_email,date_of_birth, type_register, phone_number, gender FROM public.users WHERE user_email = $1`;
+  const query = `SELECT * FROM public.users WHERE user_email = $1`;
   const values = [email];
 
   const result = await executeSQLQuery(query, values);
@@ -207,4 +207,20 @@ export const addTutor = async (
     console.error('Error adding tutor:', error);
     throw error;
   }
+};
+
+export const updateUserDetails = async (email: string, bio: string, photo: string) => {
+  const query = `
+    UPDATE public.users 
+    SET 
+      bio = $1,
+      photo = $2
+    WHERE user_email = $3
+    RETURNING *;
+  `;
+
+  const values = [bio, photo, email];
+
+  const result = await executeSQLQuery(query, values);
+  return result.rows[0];
 };
