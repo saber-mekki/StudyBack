@@ -10,7 +10,8 @@ import {
   CheckUserExistController,
   updatePasswordController,
   UpadateUserController,
-  addTutorDetails
+  addTutorDetails,
+  updateAcceuil
 } from "../../controllers/users";
 import { authenticateToken } from "../../helpers";
 
@@ -620,5 +621,78 @@ router.route("/refresh_token").delete(deleteRefreshTokenController);
  */
 
 router.route("/addTutor").post(addTutorDetails);
+
+/**
+ * @swagger
+ * /updateAcceuil:
+ *   post:
+ *     summary: Update user bio and photo
+ *     tags: [User]
+ *     requestBody:
+ *       description: User email, new bio, and new photo
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - bio
+ *               - photo
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: "ex@email.com"
+ *               bio:
+ *                 type: string
+ *                 example: "Hi, I'm John Doe. I love EduSkills!"
+ *               photo:
+ *                 type: string
+ *                 example: "http://example.com/path/to/photo.jpg"
+ *
+ *     responses:
+ *       200:
+ *         description: User updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "User updated successfully"
+ *       400:
+ *         description: Bad request (Invalid input)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Invalid request data"
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "User not found"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Internal server error"
+ */
+router.route("/updateAcceuil").post(updateAcceuil);
+
 
 export default router;
