@@ -2,7 +2,7 @@ import { executeSQLQuery } from "../../database";
 
 
 export const getTutorAvailability = async (tutorId:any) => {
-  const result = await executeSQLQuery('SELECT * FROM tutor_availability WHERE tutor_id = $1 AND status != $2', [tutorId, 'removed']);
+  const result = await executeSQLQuery('SELECT * FROM tutor_availability WHERE tutor_id = $1 ', [tutorId]);
   return result.rows;
 };
 
@@ -10,7 +10,7 @@ export const getTutorAvailability = async (tutorId:any) => {
 export const addTutorAvailability = async (tutorId:any, availableDate:any) => {
   await executeSQLQuery(
     'INSERT INTO tutor_availability (tutor_id, available_date, status) VALUES ($1, $2, $3)',
-    [tutorId, availableDate, 'booked']
+    [tutorId, availableDate, 'available']
   );
 };
 

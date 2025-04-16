@@ -41,8 +41,8 @@ CREATE TABLE users(
   date_of_birth DATE,
   photo TEXT,  
   bio TEXT
-
 );
+
 CREATE TABLE tutors (
   tutor_email TEXT PRIMARY KEY REFERENCES users(user_email) ON DELETE CASCADE,
   country TEXT,
@@ -89,8 +89,8 @@ CREATE TABLE images (
 );
 
 CREATE TABLE tutor_availability (
-  id SERIAL PRIMARY KEY,
-  tutor_id INT NOT NULL,
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  tutor_id UUID NOT NULL,
   available_date DATE NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -98,8 +98,8 @@ ALTER TABLE tutor_availability ADD COLUMN status VARCHAR(20) DEFAULT 'available'
 
 CREATE TABLE student_bookings (
   id SERIAL PRIMARY KEY,
-  student_id INT NOT NULL,
-  tutor_id INT NOT NULL,
+  student_id UUID NOT NULL,
+ tutor_id UUID NOT NULL,
   booking_date DATE NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
