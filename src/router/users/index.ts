@@ -11,7 +11,9 @@ import {
   updatePasswordController,
   UpadateUserController,
   addTutorDetails,
-  updateAcceuil
+  updateAcceuil,
+  UpdateStatusController,
+  ShowStatusController
 } from "../../controllers/users";
 import { authenticateToken } from "../../helpers";
 
@@ -694,5 +696,96 @@ router.route("/addTutor").post(addTutorDetails);
  */
 router.route("/updateAcceuil").post(updateAcceuil);
 
+
+/**
+ * @swagger
+ * /status:
+ *   post:
+ *     summary: Update user status
+ *     description: Update the status of a user (either "accepted" or "rejected") using their email.
+ *     tags:
+ *       - Users
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: "user@example.com"
+ *               status:
+ *                 type: string
+ *                 enum:
+ *                   - accepted
+ *                   - rejected
+ *                 description: The new status of the user.
+ *                 example: "accepted"
+ *     responses:
+ *       200:
+ *         description: User status updated successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: User updated successfully
+ *       400:
+ *         description: Invalid status or email.
+ *       500:
+ *         description: Internal server error.
+ */
+router.route("/status").post(UpdateStatusController);
+
+/**
+ * @swagger
+ * /showStatus:
+ *   post:
+ *     summary: Show the status of the user
+ *     description: Fetch the status of a user by their email.
+ *     tags:
+ *       - Users
+ *     requestBody:
+ *       description: Email of the user whose status is to be fetched
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: "user@example.com"
+ *     responses:
+ *       200:
+ *         description: Status fetched successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "User status fetched successfully"
+ *                 status:
+ *                   type: string
+ *                   example: "activated"
+ *       404:
+ *         description: User not found.
+ *       500:
+ *         description: Internal server error.
+ */
+router.route("/showStatus").post(ShowStatusController);
 
 export default router;

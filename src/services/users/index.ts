@@ -224,3 +224,29 @@ export const updateUserDetails = async (email: string, bio: string, photo: strin
   const result = await executeSQLQuery(query, values);
   return result.rows[0];
 };
+export const updateUserStatus = async (email: string, status: string) => {
+  const query = `
+    UPDATE public.users 
+    SET status = $1 
+    WHERE user_email = $2 
+    RETURNING *;
+  `;
+  const values = [status, email];
+  const result = await executeSQLQuery(query, values);
+
+  console.log("Update query result:", result.rows); // 🐞 Debug info
+
+  return result;
+};
+export const showStatus = async (email: string): Promise<string | null> => {
+  const query = "SELECT status FROM public.users WHERE user_email = $1";
+  const values = [email];
+
+  const result = await executeSQLQuery(query, values);
+
+  if (result.rows.length === 0) {
+    return null; 
+  }
+
+  return result.rows[0].status;
+};

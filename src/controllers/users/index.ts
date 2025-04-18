@@ -10,7 +10,9 @@ import {
   updatePassword,
   updateUser,
   addTutor,
-  updateUserDetails
+  updateUserStatus,
+  updateUserDetails,
+  showStatus
 } from "../../services/users";
 import { Request, Response } from "express";
 
@@ -254,5 +256,71 @@ export const updateAcceuil = async (req: Request, res: Response) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
+const validStatuses = ["accepted", "rejected", "waiting","aproved"];
+
+export const UpdateStatusController = async (req: Request, res: Response) => {
+  const { email, status } = req.body;
+
+  if (!email || !status) {
+    return res.status(400).json({ error: true, message: "Email and status are required." });
+  }
+
+  if (!validStatuses.includes(status)) {
+    return res.status(400).json({
+      error: true,
+      message: `Invalid status. Allowed values are: ${validStatuses.join(", ")}.`,
+    });
+  }
+
+  try {
+    const result = await updateUserStatus(email, status);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        error: true,
+        message: "No user found with the provided email.",
+      });
+    }
+
+    return res.status(200).json({
+      error: false,
+      message: "User status updated successfully.",
+    });
+  } catch (error) {
+    console.error("UpdateStatusController Error:", error);
+    return res.status(500).json({
+      error: true,
+      message: "Internal server error.",
+    });
+  }
+};
+
+export const ShowStatusController = async (req: Request, res: Response) => {
+  const { email } = req.body;
+
+  try {
+    const status = await showStatus(email);
+
+    if (!status) {
+      return res.status(404).json({
+        error: true,
+        message: "User not found or no status available for the given email",
+      });
+    }
+
+    return res.status(200).json({
+      error: false,
+      status: status,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      error: true,
+      message: "Internal server error",
+    });
   }
 };
