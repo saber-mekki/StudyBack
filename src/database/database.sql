@@ -96,13 +96,17 @@ CREATE TABLE tutor_availability (
 );
 ALTER TABLE tutor_availability ADD COLUMN status VARCHAR(20) DEFAULT 'available';
 
+
 CREATE TABLE student_bookings (
   id SERIAL PRIMARY KEY,
-  student_id UUID NOT NULL,
- tutor_id UUID NOT NULL,
-  booking_date DATE NOT NULL,
+  tutor_id UUID NOT NULL,
+  user_id UUID NOT NULL,
+  requested_date DATE NOT NULL,
+  status VARCHAR(20) DEFAULT 'pending', -- pending, accepted, declined
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+ALTER TABLE student_bookings ADD COLUMN message TEXT;
+ALTER TABLE student_bookings ADD COLUMN name TEXT;
 
 SELECT * FROM users;
 

@@ -1,8 +1,32 @@
 import { executeSQLQuery } from "../../database";
 
-export const createStudentBooking = async (studentId:any, tutorId:any, selectedDate:any) => {
+export const createStudentBooking = async (studentId:any, tutorId:any, selectedDate:any, name:any, message:any ) => {
   await executeSQLQuery(
-    'INSERT INTO student_bookings (student_id, tutor_id, booking_date) VALUES ($1, $2, $3)',
-    [studentId, tutorId, selectedDate]
+    'INSERT INTO student_bookings (user_id , tutor_id, booking_date,status,name,message) VALUES ($1, $2, $3,$4,$5,$6)',
+    [studentId, tutorId, selectedDate,'pending',name,message]
+  );
+};
+
+export const getPendingBookings = async (tutorId:any) => {
+  const result = await executeSQLQuery(
+    `SELECT id, tutor_id, user_id, booking_date, status ,name, message
+     FROM student_bookings
+     WHERE tutor_id = $1 AND status = 'pending'`,
+    [tutorId]
+  );
+  return result.rows;
+};
+
+export const acceptBooking = async (bookingId:any) => {
+  await executeSQLQuery(
+    `UPDATE student_bookings SET status = 'accepted' WHERE id = $1`,
+    [bookingId]
+  );
+};
+
+export const declineBooking = async (bookingId:any) => {
+  await executeSQLQuery(
+    `UPDATE student_bookings SET status = 'declined' WHERE id = $1`,
+    [bookingId]
   );
 };
