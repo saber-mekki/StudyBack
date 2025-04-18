@@ -22,7 +22,7 @@ export default (app: Application) => {
       },
       servers: [
         {
-          url:  process.env.API_URL + "/api/v1",
+          url: `${process.env.API_URL || "http://localhost:5000"}/api/v1`,
         },
       ],
       components: {
