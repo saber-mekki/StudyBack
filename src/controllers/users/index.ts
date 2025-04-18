@@ -150,9 +150,9 @@ export const addUserController = async (req: Request, res: Response) => {
 };
 
 export const deleteUserController = async (req: Request, res: Response) => {
-  const { login } = req.query;
+  const { email } = req.body;
   try {
-    await deleteUser(login as string);
+    await deleteUser(email as string);
     res.status(200).send("User deleted successfully");
   } catch (error) {
     console.log(error);

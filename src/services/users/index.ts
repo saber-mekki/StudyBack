@@ -94,7 +94,7 @@ export const updateUser = async (
 
 export const deleteUser = async (email: string) => {
   const query = `
-    DELETE FROM public."users" 
+    DELETE FROM public.users
     WHERE user_email = $1
     RETURNING user_id, user_name, user_email;
   `;

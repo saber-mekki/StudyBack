@@ -410,27 +410,32 @@ router.route("/login").post(loginUserController);
 /**
  * @swagger
  * /deleteUser:
- *   delete:
- *     summary: Delete a user by login
+ *   post:  
+ *     summary: Delete User
  *     tags: [User]
- *     parameters:
- *       - in: query
- *         name: login
- *         schema:
- *           type: string
- *         required: true
- *         description: The login of the user to delete
+ *     requestBody:
+ *       description: Request to check if the email exists in the database
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: "user@gmail.com"
+ *                 required: true
  *     responses:
  *       200:
- *         description: User deleted successfully
+ *         description: Email check result
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 message:
- *                   type: string
- *                   example: "User deleted successfully"
+ *                 exists:
+ *                   type: boolean
+ *                   example: true  # or false if the email does not exist
  *       404:
  *         description: Not found
  *         content:
@@ -440,7 +445,7 @@ router.route("/login").post(loginUserController);
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "User not found"
+ *                   example: "Email not found"
  *       500:
  *         description: Internal server error
  *         content:
@@ -452,7 +457,9 @@ router.route("/login").post(loginUserController);
  *                   type: string
  *                   example: "Internal server error"
  */
-router.route("/deleteUser").delete(deleteUserController);
+
+router.route("/deleteUser").post(deleteUserController);
+
 
 /**
  * @swagger
