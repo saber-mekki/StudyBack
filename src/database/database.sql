@@ -40,8 +40,15 @@ CREATE TABLE users(
   gender TEXT CHECK (gender IN ('male', 'female')) ,
   date_of_birth DATE,
   photo TEXT,  
-  bio TEXT
+  bio TEXT ,
+  status TEXT DEFAULT 'waiting' CHECK (status IN ('accepted', 'rejected', 'waiting', 'approved'))
+
+
 );
+
+ALTER TABLE users ADD COLUMN status TEXT DEFAULT 'waiting';
+
+ALTER TABLE users ADD CONSTRAINT status_check CHECK (status IN ('accepted', 'rejected', 'waiting','aproved'))
 
 CREATE TABLE tutors (
   tutor_email TEXT PRIMARY KEY REFERENCES users(user_email) ON DELETE CASCADE,
