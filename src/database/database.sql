@@ -103,10 +103,10 @@ CREATE TABLE student_bookings (
   user_id UUID NOT NULL,
   requested_date DATE NOT NULL,
   status VARCHAR(20) DEFAULT 'pending', -- pending, accepted, declined
+  message TEXT,
+  name TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-ALTER TABLE student_bookings ADD COLUMN message TEXT;
-ALTER TABLE student_bookings ADD COLUMN name TEXT;
 
 SELECT * FROM users;
 
