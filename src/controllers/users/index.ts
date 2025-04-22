@@ -150,9 +150,9 @@ export const addUserController = async (req: Request, res: Response) => {
 };
 
 export const deleteUserController = async (req: Request, res: Response) => {
-  const { email } = req.body;
+  const { id } = req.body;
   try {
-    await deleteUser(email as string);
+    await deleteUser(id as string);
     res.status(200).send("User deleted successfully");
   } catch (error) {
     console.log(error);
@@ -263,9 +263,9 @@ export const updateAcceuil = async (req: Request, res: Response) => {
 const validStatuses = ["accepted", "rejected", "waiting","aproved"];
 
 export const UpdateStatusController = async (req: Request, res: Response) => {
-  const { email, status } = req.body;
+  const { id, status } = req.body;
 
-  if (!email || !status) {
+  if (!id || !status) {
     return res.status(400).json({ error: true, message: "Email and status are required." });
   }
 
@@ -277,7 +277,7 @@ export const UpdateStatusController = async (req: Request, res: Response) => {
   }
 
   try {
-    const result = await updateUserStatus(email, status);
+    const result = await updateUserStatus(id, status);
 
     if (result.rowCount === 0) {
       return res.status(404).json({
@@ -300,10 +300,10 @@ export const UpdateStatusController = async (req: Request, res: Response) => {
 };
 
 export const ShowStatusController = async (req: Request, res: Response) => {
-  const { email } = req.body;
+  const { id } = req.body;
 
   try {
-    const status = await showStatus(email);
+    const status = await showStatus(id);
 
     if (!status) {
       return res.status(404).json({

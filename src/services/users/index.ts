@@ -92,15 +92,15 @@ export const updateUser = async (
   return result.rows[0];
 };
 
-export const deleteUser = async (email: string) => {
+export const deleteUser = async (id: string) => {
   const query = `
     DELETE FROM public.users
-    WHERE user_email = $1
+    WHERE user_id = $1
     RETURNING user_id, user_name, user_email;
   `;
-  const result = await executeSQLQuery(query, [email]);
+  const result = await executeSQLQuery(query, [id]);
   if (result.rows.length == 0) {
-    throw new Error(`User with username '${email}' not found.`);
+    throw new Error(`User with username '${id}' not found.`);
   }
   return result.rows[0];
 };
@@ -224,23 +224,23 @@ export const updateUserDetails = async (email: string, bio: string, photo: strin
   const result = await executeSQLQuery(query, values);
   return result.rows[0];
 };
-export const updateUserStatus = async (email: string, status: string) => {
+export const updateUserStatus = async (id: string, status: string) => {
   const query = `
     UPDATE public.users 
     SET status = $1 
-    WHERE user_email = $2 
+    WHERE user_id = $2 
     RETURNING *;
   `;
-  const values = [status, email];
+  const values = [status, id];
   const result = await executeSQLQuery(query, values);
 
-  console.log("Update query result:", result.rows); // 🐞 Debug info
+  console.log("Update query result:", result.rows); 
 
   return result;
 };
-export const showStatus = async (email: string): Promise<string | null> => {
-  const query = "SELECT status FROM public.users WHERE user_email = $1";
-  const values = [email];
+export const showStatus = async (id: string): Promise<string | null> => {
+  const query = "SELECT status FROM public.users WHERE user_id = $1";
+  const values = [id];
 
   const result = await executeSQLQuery(query, values);
 

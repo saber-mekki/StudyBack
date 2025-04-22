@@ -421,9 +421,9 @@ router.route("/login").post(loginUserController);
  *           schema:
  *             type: object
  *             properties:
- *               email:
+ *               id:
  *                 type: string
- *                 example: "user@gmail.com"
+ *                 example: "b36e6bd4-3db2-4d5e-9593-41346fcabaf9"
  *                 required: true
  *     responses:
  *       200:
@@ -719,10 +719,10 @@ router.route("/updateAcceuil").post(updateAcceuil);
  *           schema:
  *             type: object
  *             properties:
- *               email:
+ *               id:
  *                 type: string
  *                 format: email
- *                 example: "user@example.com"
+ *                 example: "bf976e49-ef94-43fe-a4b1-9ae4b080186a"
  *               status:
  *                 type: string
  *                 enum:
@@ -767,10 +767,10 @@ router.route("/status").post(UpdateStatusController);
  *           schema:
  *             type: object
  *             properties:
- *               email:
+ *               id:
  *                 type: string
  *                 format: email
- *                 example: "user@example.com"
+ *                 example: "bf976e49-ef94-43fe-a4b1-9ae4b080186a"
  *     responses:
  *       200:
  *         description: Status fetched successfully.
