@@ -1,4 +1,4 @@
-import  { createStudentBooking ,getPendingBookings,acceptBooking,declineBooking}  from '../../services/calender/studentBookingService';
+import  { createStudentBooking ,getPendingBookings,acceptBooking,declineBooking, getAllBookings}  from '../../services/calender/studentBookingService';
 
 export const createBooking = async (req:any, res:any) => {
   const { studentId, tutorId, selectedDate, name, message } = req.body;
@@ -12,6 +12,17 @@ export const createBooking = async (req:any, res:any) => {
   }
 };
 
+
+
+export const getAllBookingsController = async (req:any, res:any) => {
+  const { user_id } = req.params;
+  try {
+    const bookings = await getAllBookings(user_id);
+    res.json(bookings);
+  } catch (error:any) {
+    res.status(500).json({ message: 'Error retrieving pending bookings', error: error.message });
+  }
+};
 export const getPendingBookingsController = async (req:any, res:any) => {
   const { tutorId } = req.params;
   try {

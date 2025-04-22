@@ -1,5 +1,5 @@
 import express from "express";
-import  { createBooking ,acceptBookingController,getPendingBookingsController,declineBookingController} from "../../controllers/calender/studentBookingController";
+import  { getAllBookingsController,createBooking ,acceptBookingController,getPendingBookingsController,declineBookingController} from "../../controllers/calender/studentBookingController";
 
 
 const router = express.Router();
@@ -31,6 +31,23 @@ const router = express.Router();
 router.post('/book', createBooking);
 
 
+/**
+ * @swagger
+ * /bookings/student/{user_id}:
+ *   get:
+ *     summary: Get all booking requests for a tutor
+ *     tags: [Booking Requests]
+ *     parameters:
+ *       - in: path
+ *         name: user_id
+ *         required: true
+ *         schema:
+ *         description: ID of the tutor
+ *     responses:
+ *       200:
+ *         description: List of pending bookings
+ */
+router.get('/bookings/student/:user_id', getAllBookingsController);
 
 /**
  * @swagger
@@ -49,6 +66,7 @@ router.post('/book', createBooking);
  *         description: List of pending bookings
  */
 router.get('/tutor/booking-requests/:tutorId', getPendingBookingsController);
+
 
 /**
  * @swagger

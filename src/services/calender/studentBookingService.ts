@@ -7,6 +7,17 @@ export const createStudentBooking = async (studentId:any, tutorId:any, selectedD
   );
 };
 
+
+export const getAllBookings = async (tutorId:any) => {
+  const result = await executeSQLQuery(
+    `SELECT id, tutor_id, user_id, booking_date, status ,name, message
+     FROM student_bookings
+     WHERE user_id = $1 `,
+    [tutorId]
+  );
+  return result.rows;
+};
+
 export const getPendingBookings = async (tutorId:any) => {
   const result = await executeSQLQuery(
     `SELECT id, tutor_id, user_id, booking_date, status ,name, message
@@ -23,7 +34,7 @@ export const acceptBooking = async (bookingId:any) => {
     [bookingId]
   );
   const studentId = result.rows[0].user_id;
-  const message = `Your booking has been accepted! 🎉`;
+  const message = `Your booking has been accepted!`;
   await executeSQLQuery(
     'INSERT INTO notifications (user_id, type, message) VALUES ($1, $2, $3)',
     [studentId, 'booking_accepted', message]
