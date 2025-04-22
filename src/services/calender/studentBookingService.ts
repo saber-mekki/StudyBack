@@ -18,10 +18,16 @@ export const getPendingBookings = async (tutorId:any) => {
 };
 
 export const acceptBooking = async (bookingId:any) => {
-  await executeSQLQuery(
-    `UPDATE student_bookings SET status = 'accepted' WHERE id = $1`,
+  const result = await executeSQLQuery(
+    `UPDATE student_bookings SET status = 'accepted' WHERE id = $1 RETURNING *`,
     [bookingId]
   );
+  const studentId = result.rows[0].user_id;
+  const message = `Your booking has been accepted! 🎉`;
+  await executeSQLQuery(
+    'INSERT INTO notifications (user_id, type, message) VALUES ($1, $2, $3)',
+    [studentId, 'booking_accepted', message]
+  )
 };
 
 export const declineBooking = async (bookingId:any) => {

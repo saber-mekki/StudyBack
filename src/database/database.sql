@@ -42,8 +42,6 @@ CREATE TABLE users(
   photo TEXT,  
   bio TEXT ,
   status TEXT DEFAULT 'waiting' CHECK (status IN ('accepted', 'rejected', 'waiting', 'approved'))
-
-
 );
 
 ALTER TABLE users ADD COLUMN status TEXT DEFAULT 'waiting';
@@ -114,6 +112,17 @@ CREATE TABLE student_bookings (
   name TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+
+CREATE TABLE notifications (
+  id SERIAL PRIMARY KEY,
+  user_id UUID NOT NULL,        
+  type VARCHAR(50) NOT NULL,        
+  message TEXT NOT NULL,
+  is_read BOOLEAN DEFAULT false,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 
 SELECT * FROM users;
 
