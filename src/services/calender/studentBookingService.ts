@@ -5,6 +5,11 @@ export const createStudentBooking = async (studentId:any, tutorId:any, selectedD
     'INSERT INTO student_bookings (user_id , tutor_id, booking_date,status,name,message) VALUES ($1, $2, $3,$4,$5,$6)',
     [studentId, tutorId, selectedDate,'pending',name,message]
   );
+  const notifMessage = `${name} book a date to get a cours at ${selectedDate}`;
+  await executeSQLQuery(
+    'INSERT INTO notifications (user_id, type, message) VALUES ($1, $2, $3)',
+    [tutorId, 'calendar', notifMessage]
+  )
 };
 
 
