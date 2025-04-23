@@ -1,5 +1,8 @@
 import express from "express";
-import { CreateBlogController  ,GetAllBlogsController,GetBlogById} from "../../controllers/Blog"; 
+import { CreateBlogController  ,GetAllBlogsController,GetBlogById,
+    CreateReplicontroller,
+    GetAllRepliController
+} from "../../controllers/Blog"; 
 const router = express.Router();
 /**
  * @swagger
@@ -157,5 +160,149 @@ router.route("/blogs").get(GetAllBlogsController);
  */
 
 router.route("/blogs/:id").get(GetBlogById);
+
+/**
+ * @swagger
+ * /Createreply:
+ *   post:
+ *     summary: Create a new reply for a blog
+ *     tags:
+ *       - Replies
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - blog_id
+ *               - reply_text
+ *               - email_user
+ *             properties:
+ *               blog_id:
+ *                 type: string
+ *                 format: uuid
+ *                 description: The ID of the blog to which the reply belongs
+ *               reply_text:
+ *                 type: string
+ *                 description: The content of the reply
+ *               email_user:
+ *                 type: string
+ *                 description: The email of the user creating the reply
+ *     responses:
+ *       201:
+ *         description: Reply created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Reply created successfully
+ *       400:
+ *         description: Bad request, missing required fields
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: blog_id, reply_text, and email_user are required
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Something went wrong while creating the reply
+ */
+router.route("/Createreply").post(CreateReplicontroller);
+
+
+
+/**
+ * @swagger
+ * /replies:
+ *   post:
+ *     summary: Get all replies for a specific blog
+ *     tags:
+ *       - Replies
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: string
+ *                 format: uuid
+ *                 description: The ID of the blog to fetch replies for
+ *     responses:
+ *       200:
+ *         description: A list of replies for the specified blog
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 replies:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                         format: uuid
+ *                       blog_id:
+ *                         type: string
+ *                         format: uuid
+ *                       reply_text:
+ *                         type: string
+ *                       email_user:
+ *                         type: string
+ *                       created_at:
+ *                         type: string
+ *                         format: date-time
+ *       400:
+ *         description: Blog ID is required
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Blog ID is required
+ *       404:
+ *         description: No replies found for this blog
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: No replies found for this blog
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Server error
+ */
+
+
+router.route("/replies").post(GetAllRepliController);
+
 
 export default router;

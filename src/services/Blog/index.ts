@@ -32,4 +32,13 @@ export const GetBlogById = async (id: number) => {
   
     return result.rows[0]; 
   };
-  
+  export const createReply = async (blog_id: string, reply_text: string, email_user: string) => {
+    const id = uuidv4();
+    const created_at = new Date();
+    const query = `INSERT INTO replies (id,blog_id,reply_text,email_user,created_at) VALUES ($1, $2, $3,$4, $5)`;
+    const values = [id, blog_id, reply_text, email_user, created_at];
+    const result = await executeSQLQuery(query, values);
+    return result.rows[0];
+    
+
+  };
