@@ -11,6 +11,7 @@ import images from "./images";
 import studenBooking from "./calender/studentBooking";
 import tutorAvailability from "./calender/tutorAvailability";
 import notification from "./notification";
+import Blog from "./Blog"
 
 export default (app: Application) => {
   const options = {
@@ -55,5 +56,5 @@ export default (app: Application) => {
     res.json({ message: "API Running ! " });
   });
 
-  app.use("/api/v1/", [users,courses,upload,liveSession,images,studenBooking,tutorAvailability,notification]);
+  app.use("/api/v1/", [users,courses,upload,liveSession,images,studenBooking,tutorAvailability,notification,Blog]);
 };
