@@ -106,7 +106,7 @@ CREATE TABLE student_bookings (
   id SERIAL PRIMARY KEY,
   tutor_id UUID NOT NULL,
   user_id UUID NOT NULL,
-  requested_date DATE NOT NULL,
+  booking_date DATE NOT NULL,
   status VARCHAR(20) DEFAULT 'pending', -- pending, accepted, declined
   message TEXT,
   name TEXT,
@@ -122,6 +122,31 @@ CREATE TABLE notifications (
   is_read BOOLEAN DEFAULT false,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE blogs (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  title VARCHAR(255) NOT NULL,
+  content TEXT NOT NULL,
+  email_user VARCHAR(100) NOT NULL,
+  user_name VARCHAR(100) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (email_user) REFERENCES users(user_email) ON DELETE CASCADE
+);
+
+CREATE TABLE replies (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), 
+  blog_id UUID NOT NULL,  
+  reply_text TEXT NOT NULL,
+  email_user VARCHAR(100) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (blog_id) REFERENCES blogs(id) ON DELETE CASCADE,  
+  FOREIGN KEY (email_user) REFERENCES users(user_email) ON DELETE CASCADE 
+);
+
+
+
+
+
 
 
 SELECT * FROM users;
