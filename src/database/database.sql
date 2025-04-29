@@ -1,13 +1,15 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp"; 
 
 CREATE DATABASE education;
+
 CREATE TABLE courses (
-     tutor_email VARCHAR(255) PRIMARY KEY,
-    id SERIAL PRIMARY KEY,
+    id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tutor_id UUID NOT NULL,  
+    tutor_email VARCHAR(255) NOT NULL,
     title VARCHAR(255) NOT NULL,
     category VARCHAR(255) NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
-    description TEXT NOT NULL,
+     description TEXT NOT NULL,
     image VARCHAR(255),
     tutor VARCHAR(255) NOT NULL,
     date DATE NOT NULL,
@@ -18,16 +20,21 @@ CREATE TABLE courses (
     requirements TEXT NOT NULL DEFAULT '',
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
-        CONSTRAINT fk_tutor FOREIGN KEY (tutor_email) REFERENCES users(email) ON DELETE CASCADE
-
-
+    CONSTRAINT fk_tutor FOREIGN KEY (tutor_email) REFERENCES users(user_email) ON DELETE CASCADE
 );
 
 CREATE TABLE course_pdfs (
-    id SERIAL PRIMARY KEY,
-    course_id UUID NOT NULL,  
-    pdf_url VARCHAR(255) NOT NULL,
-    FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
+     id UUID PRIMARY KEY,
+  course_id UUID REFERENCES public."courses"(id) ON DELETE CASCADE,
+  file TEXT NOT NULL,
+  description TEXT
+);
+
+CREATE TABLE  course_videos (
+  id UUID PRIMARY KEY,
+  course_id UUID REFERENCES public."courses"(id) ON DELETE CASCADE,
+  file TEXT NOT NULL,
+  description TEXT
 );
 
 CREATE TABLE users(
