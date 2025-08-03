@@ -1,5 +1,5 @@
 import express from "express";
-import  { getAllBookingsController,createBooking ,acceptBookingController,getPendingBookingsController,declineBookingController} from "../../controllers/calender/studentBookingController";
+import  { updateBookingController,getAllBookingsController,createBooking ,acceptBookingController,getPendingBookingsController,declineBookingController} from "../../controllers/calender/studentBookingController";
 
 
 const router = express.Router();
@@ -30,19 +30,56 @@ const router = express.Router();
  */
 router.post('/book', createBooking);
 
+/**
+ * @swagger
+ * /booking/update:
+ *   put:
+ *     summary: Update booking details
+ *     tags: [Booking Requests]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               bookingId:
+ *                 type: integer
+ *               liveLink:
+ *                 type: string
+ *               selectedDate:
+ *                 type: string
+ *                 format: date
+ *               status:
+ *                 type: string
+ *               message:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Booking updated
+ */
+router.put('/booking/update', updateBookingController);
 
 /**
  * @swagger
  * /bookings/student/{user_id}:
  *   get:
- *     summary: Get all booking requests for a tutor
+ *     summary: Get all booking requests for a tutor or a student
  *     tags: [Booking Requests]
  *     parameters:
  *       - in: path
  *         name: user_id
  *         required: true
  *         schema:
- *         description: ID of the tutor
+ *           type: string
+ *         description: ID of the user
+ *       - in: query
+ *         name: itsTutor
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [yes, no]
+ *         description: Specify if the user is a tutor (yes) or a student (no)
  *     responses:
  *       200:
  *         description: List of pending bookings

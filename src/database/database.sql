@@ -118,6 +118,7 @@ CREATE TABLE student_bookings (
   message TEXT,
   name TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   live_link TEXT,
 );
 
 
