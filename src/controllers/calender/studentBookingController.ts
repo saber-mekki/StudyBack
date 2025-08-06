@@ -1,4 +1,4 @@
-import  { createStudentBooking ,getPendingBookings,acceptBooking,declineBooking, getAllBookings,updateBooking}  from '../../services/calender/studentBookingService';
+import  { deleteBooking,createStudentBooking ,getPendingBookings,acceptBooking,declineBooking, getAllBookings,updateBooking}  from '../../services/calender/studentBookingService';
 
 export const createBooking = async (req:any, res:any) => {
   const { studentId, tutorId, selectedDate, name, message } = req.body;
@@ -63,3 +63,15 @@ export const updateBookingController = async (req: any, res: any) => {
     res.status(500).json({ message: 'Error updating booking', error: error.message });
   }
 };
+
+export const deleteBookingController = async (req: any, res: any) => {
+  const { bookingId } = req.body;
+
+  try {
+    await deleteBooking(bookingId);
+    res.json({ message: 'Booking deleted successfully' });
+  } catch (error: any) {
+    res.status(500).json({ message: 'Error deleting booking', error: error.message });
+  }
+};
+

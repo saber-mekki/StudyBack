@@ -1,5 +1,5 @@
 import express from "express";
-import  { updateBookingController,getAllBookingsController,createBooking ,acceptBookingController,getPendingBookingsController,declineBookingController} from "../../controllers/calender/studentBookingController";
+import  {deleteBookingController, updateBookingController,getAllBookingsController,createBooking ,acceptBookingController,getPendingBookingsController,declineBookingController} from "../../controllers/calender/studentBookingController";
 
 
 const router = express.Router();
@@ -147,5 +147,25 @@ router.post('/tutor/booking-requests/accept', acceptBookingController);
  */
 router.post('/tutor/booking-requests/decline', declineBookingController);
 
+/**
+ * @swagger
+ * /tutor/booking-requests/delete:
+ *   delete:
+ *     summary: Delete a booking
+ *     tags: [Booking Requests]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               bookingId:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Booking deleted
+ */
+router.delete('/tutor/booking-requests/delete', deleteBookingController);
 
 export default router;

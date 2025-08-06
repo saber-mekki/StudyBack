@@ -112,3 +112,9 @@ export const updateBooking = async (
     }
   }
 };
+export const deleteBooking = async (bookingId: number) => {
+  await executeSQLQuery(
+    `DELETE FROM student_bookings WHERE id = $1`,
+    [bookingId]
+  );
+};

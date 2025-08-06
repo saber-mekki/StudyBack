@@ -103,17 +103,18 @@ CREATE TABLE images (
 CREATE TABLE tutor_availability (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   tutor_id UUID NOT NULL,
-  available_date DATE NOT NULL,
+   available_date TIMESTAMPTZ NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  status VARCHAR(20) DEFAULT 'available'
 );
-ALTER TABLE tutor_availability ADD COLUMN status VARCHAR(20) DEFAULT 'available';
+
 
 
 CREATE TABLE student_bookings (
   id SERIAL PRIMARY KEY,
   tutor_id UUID NOT NULL,
   user_id UUID NOT NULL,
-  booking_date DATE NOT NULL,
+  booking_date TIMESTAMPTZ NOT NULL,
   status VARCHAR(20) DEFAULT 'pending', -- pending, accepted, declined
   message TEXT,
   name TEXT,
