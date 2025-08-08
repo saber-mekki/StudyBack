@@ -12,7 +12,8 @@ import {
   addTutor,
   updateUserStatus,
   updateUserDetails,
-  showStatus
+  showStatus,
+  getUserById
 } from "../../services/users";
 import { Request, Response } from "express";
 
@@ -321,6 +322,27 @@ export const ShowStatusController = async (req: Request, res: Response) => {
     return res.status(500).json({
       error: true,
       message: "Internal server error",
+    });
+  }
+};
+
+
+
+export const getUserByIdController = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const user = await getUserById(id);
+
+    if (!user) {
+      return res.status(404).json({ error: true, message: "User not found" });
+    }
+
+    return res.status(200).json({ error: false, user });
+  } catch (error) {
+    return res.status(500).json({
+      error: true,
+      message: (error as Error).message || "Internal server error",
     });
   }
 };

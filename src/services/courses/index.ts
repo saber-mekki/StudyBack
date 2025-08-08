@@ -136,3 +136,14 @@ export const CreateCourse = async (
     );
     return result.rows;
   };
+
+
+
+export const getCoursesByUserId = async (userId:string) => {
+  const result = await executeSQLQuery(
+    "SELECT * FROM courses WHERE tutor_id = $1",
+    [userId]
+  );
+  return result.rows;
+};
+

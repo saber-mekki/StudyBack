@@ -250,3 +250,23 @@ export const showStatus = async (id: string): Promise<string | null> => {
 
   return result.rows[0].status;
 };
+
+export const getUserById = async (userId: string) => {
+  const query = `
+    SELECT u.*, 
+           t.country, 
+           t.price_per_hour, 
+           t.specialty, 
+           t.degree, 
+           t.languages, 
+           t.availability, 
+           t.rating,
+           t.is_active
+    FROM public.users u
+    LEFT JOIN public.tutors t ON u.user_email = t.tutor_email
+    WHERE u.user_id = $1
+  `;
+  const values = [userId];
+  const result = await executeSQLQuery(query, values);
+  return result.rows[0]; // Return a single user
+};

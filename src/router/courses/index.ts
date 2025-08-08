@@ -8,6 +8,7 @@ import {
   GetAllCoursesController,
   CreatePDFController
   , GetCourseByIdController
+  ,getCoursesByUser
 } from "../../controllers/courses"
 
 const router = express.Router();
@@ -294,3 +295,24 @@ router.get("/courses/:id", GetCourseByIdController);
 router.route("/uploadpdf")
   .post(upload.single('pdf_file'), CreatePDFController);
 export default router;
+
+
+/**
+ * @swagger
+ * /courses/user/{id}:
+ *   get:
+ *     summary: Get all courses for a given user
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: User ID (UUID)
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Courses list
+ */
+router.get("/courses/user/:id", getCoursesByUser);
+
+module.exports = router;

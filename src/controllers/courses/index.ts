@@ -1,4 +1,4 @@
-import { AddCourseVideo, CreateCourse, GetAllCourses, AddCoursePdf ,GetCourseById,GetCourseVideos,GetCoursePdfs} from "../../services/courses";
+import { getCoursesByUserId, AddCourseVideo, CreateCourse, GetAllCourses, AddCoursePdf ,GetCourseById,GetCourseVideos,GetCoursePdfs} from "../../services/courses";
 import { Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid"; 
 import path from "path";
@@ -206,5 +206,17 @@ export const CreatePDFController = async (req: Request, res: Response) => {
         message: "Error uploading PDF",
         error: error instanceof Error ? error.message : error,
       });
+  }
+};
+
+
+export const getCoursesByUser = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const courses = await getCoursesByUserId(id);
+    res.status(200).json({ error: false, courses });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: true, message: "Server error" });
   }
 };

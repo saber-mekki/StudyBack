@@ -13,7 +13,8 @@ import {
   addTutorDetails,
   updateAcceuil,
   UpdateStatusController,
-  ShowStatusController
+  ShowStatusController,
+  getUserByIdController,
 } from "../../controllers/users";
 import { authenticateToken } from "../../helpers";
 
@@ -126,6 +127,7 @@ router.route("/users").get(getUsersController);
  *                   example: "Internal server error"
  */
 router.route("/getUser").post(getUserController);
+
 
 /**
  * @swagger
@@ -350,6 +352,39 @@ router.route("/addUser").post(addUserController);
  */
 
 router.route("/updatePassword").post(updatePasswordController);
+
+/**
+ * @swagger
+ * /users/{id}:
+ *   get:
+ *     summary: Get user profile by ID
+ *     tags: [User]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: UUID of the user
+ *     responses:
+ *       200:
+ *         description: User profile retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: boolean
+ *                   example: false
+ *                 user:
+ *                   type: object
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
+ */
+router.route("/users/:id").get(getUserByIdController);
 
 /**
  * @swagger
