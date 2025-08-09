@@ -7,7 +7,6 @@ import {
   getGroupStudentsController,
   createSessionController,
   getGroupSessionsController,
-  getGroupsByTutorController
 } from "../../controllers/groups";
 
 const router = express.Router();
