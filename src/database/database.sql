@@ -153,8 +153,32 @@ CREATE TABLE replies (
 );
 
 
+CREATE TABLE groups (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    tutor_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE group_students (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    group_id UUID NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
+    student_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (group_id, student_id)
+);
 
 
+CREATE TABLE group_sessions (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    group_id UUID NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
+    session_date DATE NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    status VARCHAR(50) DEFAULT 'scheduled', -- scheduled, done, canceled
+    meeting_link TEXT
+);
 
 
 

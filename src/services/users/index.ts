@@ -213,13 +213,12 @@ export const updateUserDetails = async (email: string, bio: string, photo: strin
   const query = `
     UPDATE public.users 
     SET 
-      bio = $1,
-      photo = $2
-    WHERE user_email = $3
+      bio = $1
+    WHERE user_email = $2
     RETURNING *;
   `;
 
-  const values = [bio, photo, email];
+  const values = [bio, email];
 
   const result = await executeSQLQuery(query, values);
   return result.rows[0];
