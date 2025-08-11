@@ -28,7 +28,6 @@ export const getGroupsController = async (_req: Request, res: Response) => {
 
 export const getGroupByIdController = async (req: Request, res: Response) => {
   try {
-    console.log({cc:req.params.id})
     const group = await groupService.getGroupById(req.params.id);
     if (!group) return res.status(404).json({ error: "Group not found" });
     res.json(group);
@@ -53,15 +52,17 @@ export const addStudentToGroupController = async (req: Request, res: Response) =
 };
 
 export const getGroupStudentsController = async (req: Request, res: Response) => {
-  console.log({cccc:req.params})
+ 
   try {
-    const students = await groupService.getGroupStudents(Number(req.params.group_id));
-    res.json(students);
+    const group = await groupService.getGroupStudents(req.params.group_id);
+    if (!group) return res.status(404).json({ error: "Group not found" });
+    res.json(group);
   } catch (error: unknown) {
     if (error instanceof Error) {
-      return res.status(500).json({ error: error.message });
+      res.status(500).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: "Internal Server Error" });
     }
-    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 

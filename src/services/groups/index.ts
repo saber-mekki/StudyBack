@@ -1,12 +1,41 @@
 import { executeSQLQuery } from "../../database";
 
-export const createGroup = async ({ name, description, tutor_id }: { name: string; description?: string; tutor_id: number }) => {
+export const createGroup = async ({
+  name,
+  description,
+  tutor_id,
+  schedule_mode,
+  daily_start,
+  daily_end,
+  range_start_date,
+  range_end_date
+}: {
+  name: string;
+  description?: string;
+  tutor_id: number;
+  schedule_mode: string;
+  daily_start?: string;
+  daily_end?: string;
+  range_start_date?: string;
+  range_end_date?: string;
+}) => {
   const query = `
-    INSERT INTO groups (name, description, tutor_id)
-    VALUES ($1, $2, $3)
+    INSERT INTO groups (
+      name, description, tutor_id, schedule_mode, daily_start, daily_end, range_start_date, range_end_date
+    )
+    VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
     RETURNING *
   `;
-  const values = [name, description ?? null, tutor_id];
+  const values = [
+    name,
+    description ?? null,
+    tutor_id,
+    schedule_mode,
+    daily_start ?? null,
+    daily_end ?? null,
+    range_start_date ?? null,
+    range_end_date ?? null
+  ];
   try {
     const result = await executeSQLQuery(query, values);
     return result.rows[0];
@@ -14,6 +43,7 @@ export const createGroup = async ({ name, description, tutor_id }: { name: strin
     throw new Error("Error creating group: " + error);
   }
 };
+
 
 export const getGroups = async () => {
   const query = `
@@ -36,6 +66,11 @@ export const getGroupById = async (id: any) => {
     g.name,
     g.description,
     g.tutor_id,
+    g.schedule_mode ,
+    g.daily_start ,
+    g.daily_end ,
+    g.range_start_date ,
+    g.range_end_date ,
     u.user_name AS tutor_name,
     COUNT(gs.student_id) AS student_count
   FROM groups g
@@ -82,20 +117,42 @@ export const addStudentToGroup = async (body: any) => {
   }
 };
 
-export const getGroupStudents = async (group_id: any) => {
-  const query = `
-    SELECT u.id, u.full_name, u.email
+export const getGroupStudents = async (id: any) => {
+  const groupQuery = `
+    SELECT 
+      g.id AS group_id,
+      g.name,
+      g.description,
+      g.schedule_mode,
+      g.daily_start,
+      g.daily_end,
+      g.range_start_date,
+      g.range_end_date,
+      u.user_name AS tutor_name
+    FROM groups g
+    JOIN users u ON g.tutor_id = u.user_id
+    WHERE g.id = $1
+  `;
+
+  const studentsQuery = `
+    SELECT u.user_id, u.user_name, u.user_email,u.bio
     FROM group_students gs
-    JOIN users u ON gs.student_id = u.id
+    JOIN users u ON gs.student_id = u.user_id
     WHERE gs.group_id = $1
   `;
-  try {
-    const result = await executeSQLQuery(query, [group_id]);
-    return result.rows;
-  } catch (error) {
-    throw new Error("Error fetching group students: " + error);
-  }
+
+  const groupResult = await executeSQLQuery(groupQuery, [id]);
+  const studentsResult = await executeSQLQuery(studentsQuery, [id]);
+
+  if (groupResult.rows.length === 0) return null;
+
+  return {
+    ...groupResult.rows[0],
+    students: studentsResult.rows
+  };
 };
+
+
 
 export const createSession = async ({ group_id, session_date, start_time, end_time, meeting_link }: { group_id: number; session_date: string; start_time: string; end_time: string; meeting_link?: string }) => {
   const query = `

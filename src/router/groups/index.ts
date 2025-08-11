@@ -37,6 +37,21 @@ const router = express.Router();
  *                 type: string
  *               tutor_id:
  *                 type: integer
+ *               schedule_mode:
+ *                 type: string
+ *                 enum: [daily, ranged]
+ *               daily_start:
+ *                 type: string
+ *                 format: time
+ *               daily_end:
+ *                 type: string
+ *                 format: time
+ *               range_start_date:
+ *                 type: string 
+ *                 format: date
+ *               range_end_date:
+ *                 type: string
+ *                 format: date
  *     responses:
  *       201:
  *         description: Group created successfully

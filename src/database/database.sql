@@ -157,6 +157,11 @@ CREATE TABLE groups (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description TEXT,
+    range_end_date DATE NULL,
+    range_start_date DATE NULL,
+    daily_end TIME NULL,
+    daily_start TIME NULL,
+    schedule_mode VARCHAR(20) DEFAULT 'daily', -- daily ou ranged
     tutor_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
