@@ -181,11 +181,9 @@ CREATE TABLE group_sessions (
     session_date DATE NOT NULL,
     start_time TIME NOT NULL,
     end_time TIME NOT NULL,
-    status VARCHAR(50) DEFAULT 'scheduled', -- scheduled, done, canceled
-    meeting_link TEXT
+    status VARCHAR(50) DEFAULT 'active', --closed
+    meeting_link TEXT,
 );
-
-
 
 SELECT * FROM users;
 

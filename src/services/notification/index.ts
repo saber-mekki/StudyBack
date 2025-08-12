@@ -17,3 +17,12 @@ export const markNotificationAsRead = async (id: any): Promise<boolean> => {
     );
     return result.rowCount > 0;
   };
+
+  export const deleteNotificationById = async (id: any): Promise<boolean> => {
+    const result: any = await executeSQLQuery(
+      `DELETE FROM notifications WHERE id = $1 RETURNING *`,
+      [id]
+    );
+    return result.rowCount > 0;
+  };
+  

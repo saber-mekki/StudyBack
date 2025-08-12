@@ -7,6 +7,10 @@ import {
   getGroupStudentsController,
   createSessionController,
   getGroupSessionsController,
+  getStudentGroupSessionsController,
+  getGroupsByStudentController,
+  deleteGroupController,
+  closeSessionController
 } from "../../controllers/groups";
 
 const router = express.Router();
@@ -123,6 +127,26 @@ router.post("/groups/students", addStudentToGroupController);
 
 /**
  * @swagger
+ * /students/{student_id}/groups:
+ *   get:
+ *     tags: [Students]
+ *     summary: Get all groups for a student
+ *     parameters:
+ *       - in: path
+ *         name: student_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of groups
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/students/:student_id/groups", getGroupsByStudentController);
+
+/**
+ * @swagger
  * /groups/{group_id}/students:
  *   get:
  *     tags: [Groups]
@@ -167,6 +191,8 @@ router.get("/groups/:group_id/students", getGroupStudentsController);
  *                 format: time
  *               meeting_link:
  *                 type: string
+ *               status:
+ *                 type: string
  *     responses:
  *       201:
  *         description: Session created
@@ -194,5 +220,68 @@ router.post("/groups/sessions", createSessionController);
  *         description: Internal server error
  */
 router.get("/groups/:group_id/sessions", getGroupSessionsController);
+
+/**
+ * @swagger
+ * /students/{student_id}/sessions:
+ *   get:
+ *     tags: [Students]
+ *     summary: Get all sessions for groups the student belongs to
+ *     parameters:
+ *       - in: path
+ *         name: student_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of sessions
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/students/:student_id/sessions", getStudentGroupSessionsController);
+
+/**
+ * @swagger
+ * /groups/{id}:
+ *   delete:
+ *     tags: [Groups]
+ *     summary: Delete a group by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Group deleted successfully
+ *       404:
+ *         description: Group not found
+ *       500:
+ *         description: Internal server error
+ */
+router.delete("/groups/:id", deleteGroupController);
+
+/**
+ * @swagger
+ * /groups/sessions/{id}/close:
+ *   put:
+ *     tags: [Groups]
+ *     summary: Close a live session
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Session closed successfully
+ *       404:
+ *         description: Session not found
+ */
+router.put("/groups/sessions/:id/close", closeSessionController);
+
 
 export default router;

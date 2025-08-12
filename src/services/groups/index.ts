@@ -154,19 +154,61 @@ export const getGroupStudents = async (id: any) => {
 
 
 
-export const createSession = async ({ group_id, session_date, start_time, end_time, meeting_link }: { group_id: number; session_date: string; start_time: string; end_time: string; meeting_link?: string }) => {
+export const createSession = async ({
+  group_id,
+  session_date,
+  start_time,
+  end_time,
+  meeting_link,
+  status
+}: {
+  group_id: any;
+  session_date: string;
+  start_time: string;
+  end_time: string;
+  meeting_link?: string;
+  status: any;
+}) => {
   const query = `
-    INSERT INTO group_sessions (group_id, session_date, start_time, end_time, meeting_link)
-    VALUES ($1, $2, $3, $4, $5)
+    INSERT INTO group_sessions (group_id, session_date, start_time, end_time, meeting_link, status)
+    VALUES ($1, $2, $3, $4, $5, $6)
     RETURNING *
   `;
+
   try {
-    const result = await executeSQLQuery(query, [group_id, session_date, start_time, end_time, meeting_link ?? null]);
+    const result = await executeSQLQuery(query, [
+      group_id,
+      session_date,
+      start_time,
+      end_time,
+      meeting_link ?? null,
+      status
+    ]);
+    const studentsQuery = `
+    SELECT u.user_id, u.user_name, u.user_email,u.bio
+    FROM group_students gs
+    JOIN users u ON gs.student_id = u.user_id
+    WHERE gs.group_id = $1
+  `;
+    const studentsRes = await executeSQLQuery(
+      studentsQuery,
+      [group_id]
+    );
+    const message = `A new live session has been created!`;
+    for (const student of studentsRes.rows) {
+      await executeSQLQuery(
+        `INSERT INTO notifications (user_id, type, message)
+         VALUES ($1, $2, $3)`,
+        [student.user_id, 'session_created', message]
+      );
+    }
+
     return result.rows[0];
   } catch (error) {
     throw new Error("Error creating session: " + error);
   }
 };
+
 
 export const getGroupSessions = async (group_id: any) => {
   const query = `
@@ -180,5 +222,69 @@ export const getGroupSessions = async (group_id: any) => {
     return result.rows;
   } catch (error) {
     throw new Error("Error fetching group sessions: " + error);
+  }
+};
+
+export const getGroupsByStudent = async (student_id: string) => {
+  const query = `
+    SELECT g.*
+    FROM groups g
+    INNER JOIN group_students gs ON gs.group_id = g.id
+    WHERE gs.student_id = $1
+  `;
+  const result = await executeSQLQuery(query, [student_id]);
+  return result.rows;
+};
+
+
+export const getStudentGroupSessions = async (student_id: string) => {
+  const query = `
+    SELECT gs.*
+    FROM group_sessions gs
+    INNER JOIN groups g ON gs.group_id = g.id
+    INNER JOIN group_students s ON s.group_id = g.id
+    WHERE s.student_id = $1
+    ORDER BY gs.session_date ASC, gs.start_time ASC
+  `;
+  try {
+    const result = await executeSQLQuery(query, [student_id]);
+    return result.rows;
+  } catch (error) {
+    throw new Error("Error fetching student sessions: " + error);
+  }
+};
+
+export const deleteGroup = async (id: any) => {
+  const query = `
+    DELETE FROM groups
+    WHERE id = $1
+    RETURNING *
+  `;
+  try {
+    const result = await executeSQLQuery(query, [id]);
+    if (result.rows.length === 0) {
+      throw new Error("Group not found");
+    }
+    return result.rows[0];
+  } catch (error) {
+    throw new Error("Error deleting group: " + error);
+  }
+};
+
+export const closeSession = async (sessionId: any) => {
+  const query = `
+    UPDATE group_sessions
+    SET status = 'closed'
+    WHERE id = $1
+    RETURNING *
+  `;
+  try {
+    const result = await executeSQLQuery(query, [sessionId]);
+    if (result.rows.length === 0) {
+      throw new Error("Session not found");
+    }
+    return result.rows[0];
+  } catch (error) {
+    throw new Error("Error closing session: " + error);
   }
 };

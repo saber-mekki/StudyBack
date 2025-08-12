@@ -1,5 +1,5 @@
 import express from 'express';
-import { getNotifications,markAsRead } from '../../controllers/notification';
+import { getNotifications,markAsRead,deleteNotification } from '../../controllers/notification';
 
 const router = express.Router();
 
@@ -67,5 +67,25 @@ router.get('/notifications/:userId', getNotifications);
  */
 router.put('/notifications/:id/read', markAsRead);
 
+/**
+ * @swagger
+ * /notifications/{id}:
+ *   delete:
+ *     summary: Delete a notification
+ *     tags: [Notifications]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Notification ID
+ *     responses:
+ *       200:
+ *         description: Notification deleted successfully
+ *       404:
+ *         description: Notification not found
+ */
+router.delete('/notifications/:id', deleteNotification);
 
 export default router;
