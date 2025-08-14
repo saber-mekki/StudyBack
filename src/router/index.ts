@@ -13,6 +13,8 @@ import tutorAvailability from "./calender/tutorAvailability";
 import notification from "./notification";
 import Blog from "./Blog"
 import Groups from "./groups"
+import rating from "./rating"
+import messages from "./messages"
 
 export default (app: Application) => {
   const options = {
@@ -57,5 +59,5 @@ export default (app: Application) => {
     res.json({ message: "API Running ! " });
   });
 
-  app.use("/api/v1/", [users,courses,upload,liveSession,images,studenBooking,tutorAvailability,notification,Blog,Groups]);
+  app.use("/api/v1/", [users,courses,upload,liveSession,images,studenBooking,tutorAvailability,notification,Blog,Groups,rating,messages]);
 };

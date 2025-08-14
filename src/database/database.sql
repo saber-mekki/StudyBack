@@ -185,6 +185,23 @@ CREATE TABLE group_sessions (
     meeting_link TEXT,
 );
 
+CREATE TABLE tutor_ratings (
+    id SERIAL PRIMARY KEY,
+    tutor_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    student_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    rating INT CHECK (rating >= 1 AND rating <= 5) NOT NULL,
+    comment TEXT,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE messagesChat (
+  id SERIAL PRIMARY KEY,
+  tutor_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+  student_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+  message TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
 SELECT * FROM users;
 
 INSERT INTO users (user_name,user_email,user_password) VALUES ('test','test@test.com','test');
