@@ -196,8 +196,9 @@ CREATE TABLE tutor_ratings (
 
 CREATE TABLE messagesChat (
   id SERIAL PRIMARY KEY,
-  tutor_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
-  student_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+  sender_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+  receiver_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+  COLUMN is_read BOOLEAN DEFAULT FALSE,
   message TEXT NOT NULL,
   created_at TIMESTAMP DEFAULT NOW()
 );
