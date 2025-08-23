@@ -15,6 +15,7 @@ import Blog from "./Blog"
 import Groups from "./groups"
 import rating from "./rating"
 import messages from "./messages"
+import purchases from "./purchases"
 
 export default (app: Application) => {
   const options = {
@@ -59,5 +60,5 @@ export default (app: Application) => {
     res.json({ message: "API Running ! " });
   });
 
-  app.use("/api/v1/", [users,courses,upload,liveSession,images,studenBooking,tutorAvailability,notification,Blog,Groups,rating,messages]);
+  app.use("/api/v1/", [users,courses,upload,liveSession,images,studenBooking,tutorAvailability,notification,Blog,Groups,rating,messages,purchases]);
 };

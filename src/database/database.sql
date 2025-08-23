@@ -203,6 +203,17 @@ CREATE TABLE messagesChat (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
+CREATE TABLE course_purchases (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    course_id UUID NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+    student_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    paypal_order_id TEXT NOT NULL, -- PayPal order ID for verification
+    amount DECIMAL(10,2) NOT NULL,
+    status VARCHAR(20) DEFAULT 'pending', -- pending, completed, failed, refunded
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+
 SELECT * FROM users;
 
 INSERT INTO users (user_name,user_email,user_password) VALUES ('test','test@test.com','test');
