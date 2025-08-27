@@ -51,7 +51,6 @@ CREATE TABLE users(
   status TEXT DEFAULT 'waiting' CHECK (status IN ('accepted', 'rejected', 'waiting', 'approved'))
 );
 
-ALTER TABLE users ADD COLUMN status TEXT DEFAULT 'waiting';
 
 ALTER TABLE users ADD CONSTRAINT status_check CHECK (status IN ('accepted', 'rejected', 'waiting','aproved'))
 
@@ -104,7 +103,7 @@ CREATE TABLE tutor_availability (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   tutor_id UUID NOT NULL,
    available_date TIMESTAMPTZ NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   status VARCHAR(20) DEFAULT 'available'
 );
 
@@ -118,8 +117,8 @@ CREATE TABLE student_bookings (
   status VARCHAR(20) DEFAULT 'pending', -- pending, accepted, declined
   message TEXT,
   name TEXT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-   live_link TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+   live_link TEXT
 );
 
 
@@ -182,10 +181,10 @@ CREATE TABLE group_sessions (
     start_time TIME NOT NULL,
     end_time TIME NOT NULL,
     status VARCHAR(50) DEFAULT 'active', --closed
-    meeting_link TEXT,
+    meeting_link TEXT
 );
 
-CREATE TABLE tutor_ratings (
+CREATE TABLE tutor_cours_ratings (
     id SERIAL PRIMARY KEY,
     tutor_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
     student_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
@@ -198,7 +197,7 @@ CREATE TABLE messagesChat (
   id SERIAL PRIMARY KEY,
   sender_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
   receiver_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
-  COLUMN is_read BOOLEAN DEFAULT FALSE,
+  is_read BOOLEAN DEFAULT FALSE,
   message TEXT NOT NULL,
   created_at TIMESTAMP DEFAULT NOW()
 );
@@ -213,6 +212,15 @@ CREATE TABLE course_purchases (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
+CREATE TABLE cours_ratings (
+    id SERIAL PRIMARY KEY,
+    user_id UUID REFERENCES users(user_id) ON DELETE CASCADE,
+    course_id UUID REFERENCES courses(id) ON DELETE CASCADE,
+    rating INT CHECK (rating BETWEEN 1 AND 5),
+    comment TEXT,
+    created_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE(user_id, course_id) -- one rating per user per course
+);
 
 SELECT * FROM users;
 

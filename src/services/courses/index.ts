@@ -139,7 +139,7 @@ export const CreateCourse = async (
 
 
 
-export const getCoursesByUserId = async (userId:string) => {
+export const getCoursesByUserId = async (userId:any) => {
   const result = await executeSQLQuery(
     "SELECT * FROM courses WHERE tutor_id = $1",
     [userId]
@@ -147,3 +147,66 @@ export const getCoursesByUserId = async (userId:string) => {
   return result.rows;
 };
 
+export async function addOrUpdateRatingS(
+  userId: any,
+  courseId: any,
+  rating: number,
+  comment: string
+){
+  // Check if user purchased this course
+  const purchase = await executeSQLQuery(
+    "SELECT * FROM course_purchases WHERE student_id=$1 AND course_id=$2",
+    [userId, courseId]
+  );
+
+  if (purchase.rows.length === 0) {
+    throw new Error("You must purchase the course before rating it.");
+  }
+
+  const result = await executeSQLQuery(
+    `INSERT INTO cours_ratings (user_id, course_id, rating, comment)
+     VALUES ($1, $2, $3, $4)
+     ON CONFLICT (user_id, course_id)
+     DO UPDATE SET rating = EXCLUDED.rating, comment = EXCLUDED.comment
+     RETURNING *`,
+    [userId, courseId, rating, comment]
+  );
+
+  return result.rows[0];
+}
+
+// ✅ Get all ratings for a course
+export async function getCourseRatingsS(
+  courseId: any
+){
+  const ratings = await executeSQLQuery(
+    `SELECT r.id, r.user_id, r.course_id, r.rating, r.comment, r.created_at, u.user_name
+     FROM cours_ratings r
+     JOIN users u ON r.user_id = u.user_id
+     WHERE r.course_id=$1
+     ORDER BY r.created_at DESC`,
+    [courseId]
+  );
+
+  const avg = await executeSQLQuery(
+    "SELECT COALESCE(AVG(rating),0) as average FROM cours_ratings WHERE course_id=$1",
+    [courseId]
+  );
+
+  return {
+    ratings: ratings.rows,
+    averageRating: Number(avg.rows[0].average),
+  };
+}
+
+// ✅ Get all ratings of a user
+export async function getUserRatingsS(userId: any){
+  const result = await executeSQLQuery(
+    `SELECT r.id, r.user_id, r.course_id, r.rating, r.comment, r.created_at, c.title as course_title
+     FROM cours_ratings r
+     JOIN courses c ON r.course_id = c.id
+     WHERE r.user_id=$1`,
+    [userId]
+  );
+  return result.rows;
+}

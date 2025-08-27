@@ -1,4 +1,4 @@
-import { getCoursesByUserId, AddCourseVideo, CreateCourse, GetAllCourses, AddCoursePdf ,GetCourseById,GetCourseVideos,GetCoursePdfs} from "../../services/courses";
+import { addOrUpdateRatingS,getCourseRatingsS,getUserRatingsS,getCoursesByUserId, AddCourseVideo, CreateCourse, GetAllCourses, AddCoursePdf ,GetCourseById,GetCourseVideos,GetCoursePdfs} from "../../services/courses";
 import { Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid"; 
 import path from "path";
@@ -218,5 +218,38 @@ export const getCoursesByUser = async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: true, message: "Server error" });
+  }
+};
+
+export const addOrUpdateRating = async (req: Request, res: Response) => {
+  try {
+    const { userId, courseId, rating, comment } = req.body;
+    const result = await addOrUpdateRatingS(userId, courseId, rating, comment);
+    res.json({ message: "Rating submitted", rating: result });
+  } catch (err:any) {
+    console.error(err);
+    res.status(500).json({ error: err.message || "Internal server error" });
+  }
+};
+
+export const getCourseRatings = async (req: Request, res: Response) => {
+  try {
+    const { courseId } = req.params;
+    const result = await getCourseRatingsS(courseId);
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const getUserRatings = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const result = await getUserRatingsS(userId);
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
   }
 };

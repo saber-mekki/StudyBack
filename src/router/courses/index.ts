@@ -9,6 +9,7 @@ import {
   CreatePDFController
   , GetCourseByIdController
   ,getCoursesByUser
+  ,addOrUpdateRating,getCourseRatings,getUserRatings
 } from "../../controllers/courses"
 
 const router = express.Router();
@@ -314,5 +315,15 @@ export default router;
  *         description: Courses list
  */
 router.get("/courses/user/:id", getCoursesByUser);
+
+
+// POST → add or update rating
+router.post("/rating/courses", addOrUpdateRating);
+
+// GET → all ratings for a course
+router.get("/rating/course/:courseId", getCourseRatings);
+
+// GET → all ratings of a user
+router.get("/rating/user/:userId", getUserRatings);
 
 module.exports = router;
