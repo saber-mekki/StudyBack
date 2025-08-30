@@ -181,8 +181,12 @@ CREATE TABLE group_sessions (
     start_time TIME NOT NULL,
     end_time TIME NOT NULL,
     status VARCHAR(50) DEFAULT 'active', --closed
-    meeting_link TEXT
+    meeting_link TEXT,
+     session_note TEXT NULL 
 );
+
+ALTER TABLE group_sessions
+ADD COLUMN session_note TEXT NULL;
 
 CREATE TABLE tutor_cours_ratings (
     id SERIAL PRIMARY KEY,
@@ -220,6 +224,18 @@ CREATE TABLE cours_ratings (
     comment TEXT,
     created_at TIMESTAMP DEFAULT NOW(),
     UNIQUE(user_id, course_id) -- one rating per user per course
+);
+
+CREATE TABLE session_attendance (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    session_id UUID NOT NULL REFERENCES group_sessions(id) ON DELETE CASCADE,
+    student_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    status VARCHAR(20) DEFAULT 'absent', -- present / absent / late
+    time_spent INTERVAL NULL,            -- optional: how long the student attended
+    joined_at TIMESTAMP NULL,
+    left_at TIMESTAMP NULL,
+     note TEXT NULL,  
+    UNIQUE (session_id, student_id)
 );
 
 SELECT * FROM users;

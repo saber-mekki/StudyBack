@@ -288,3 +288,151 @@ export const closeSession = async (sessionId: any) => {
     throw new Error("Error closing session: " + error);
   }
 };
+
+export const markAttendance = async ({
+  session_id,
+  student_id,
+  status,
+  joined_at,
+  left_at
+}: {
+  session_id: string; // UUID
+  student_id: string; // UUID
+  status: "present" | "absent" | "late";
+  joined_at?: Date;
+  left_at?: Date;
+}) => {
+  const query = `
+    INSERT INTO session_attendance (session_id, student_id, status, joined_at, left_at)
+    VALUES ($1, $2, $3, $4, $5)
+    ON CONFLICT (session_id, student_id)
+    DO UPDATE SET 
+      status = EXCLUDED.status,
+      joined_at = COALESCE(EXCLUDED.joined_at, session_attendance.joined_at),
+      left_at = COALESCE(EXCLUDED.left_at, session_attendance.left_at),
+      time_spent = CASE 
+        WHEN EXCLUDED.left_at IS NOT NULL AND EXCLUDED.joined_at IS NOT NULL
+          THEN (EXCLUDED.left_at - EXCLUDED.joined_at)
+        ELSE session_attendance.time_spent
+      END
+    RETURNING *;
+  `;
+  
+  const values = [session_id, student_id, status, joined_at || null, left_at || null];
+
+  try {
+    const result = await executeSQLQuery(query, values);
+    return result.rows[0];
+  } catch (error) {
+    throw new Error("Error marking attendance: " + error);
+  }
+};
+
+export const getSessionAttendance = async (session_id: any) => {
+  const query = `
+    SELECT 
+      u.user_id AS student_id,
+      u.user_name AS name,
+      sa.status,
+      sa.joined_at,
+      sa.left_at,
+      sa.time_spent,
+      gsess.start_time,
+      gsess.end_time,
+      gsess.session_note,
+      sa.note
+    FROM users u
+    LEFT JOIN session_attendance sa
+      ON u.user_id = sa.student_id AND sa.session_id = $1
+    INNER JOIN group_students gs 
+      ON gs.student_id = u.user_id
+    INNER JOIN group_sessions gsess
+      ON gsess.id = $1
+    WHERE gs.group_id = gsess.group_id
+      AND u.type_register = 'student';
+  `;
+
+  try {
+    const result = await executeSQLQuery(query, [session_id]);
+    return result.rows;
+  } catch (error) {
+    throw new Error("Error fetching session attendance: " + error);
+  }
+};
+
+export const getGroupAttendance = async (groupId: string) => {
+  const query = `
+    SELECT 
+      u.user_id,
+      u.user_name,
+      gsess.id AS session_id,
+      gsess.session_date,
+      gsess.session_note,
+      COUNT(sa.id) FILTER (WHERE sa.status = 'present') AS present_count,
+      COUNT(sa.id) FILTER (WHERE sa.status = 'absent') AS absent_count,
+      COUNT(sa.id) FILTER (WHERE sa.status = 'late') AS late_count,
+      COUNT(sa.id) AS total_records
+    FROM group_students gs
+    JOIN users u ON u.user_id = gs.student_id
+    JOIN group_sessions gsess ON gsess.group_id = gs.group_id
+    LEFT JOIN session_attendance sa 
+      ON sa.student_id = gs.student_id
+      AND sa.session_id = gsess.id
+    WHERE gs.group_id = $1
+    GROUP BY u.user_id, u.user_name, gsess.id, gsess.session_date, gsess.session_note
+    ORDER BY gsess.session_date, u.user_name;
+  `;
+  const result = await executeSQLQuery(query, [groupId]);
+  return result.rows;
+};
+
+export const addSessionNote = async (sessionId: string, session_note: string) => {
+  const query = `
+    UPDATE group_sessions
+    SET session_note = $1
+    WHERE id = $2
+    RETURNING *
+  `;
+  const values = [session_note, sessionId];
+
+  try {
+    const result = await executeSQLQuery(query, values);
+    if (result.rows.length === 0) {
+      throw new Error("Session not found");
+    }
+    return result.rows[0];
+  } catch (error) {
+    throw new Error("Error updating session note: " + error);
+  }
+};
+
+export const updateStudentNote = async ({
+  sessionId,
+  studentId,
+  note
+}: {
+  sessionId: string;
+  studentId: string;
+  note: string;
+}) => {
+  const query = `
+    UPDATE session_attendance
+    SET note = $1
+    WHERE session_id = $2 AND student_id = $3
+    RETURNING *
+  `;
+  const values = [note, sessionId, studentId];
+
+  try {
+    const result = await executeSQLQuery(query, values);
+    if (result.rows.length === 0) {
+      throw new Error("Attendance record not found");
+    }
+    return result.rows[0];
+  } catch (error) {
+    throw new Error("Error updating note: " + error);
+  }
+
+
+};
+

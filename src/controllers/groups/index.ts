@@ -143,3 +143,98 @@ export const closeSessionController = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+// export const markAttendanceController = async (req: Request, res: Response) => {
+//   try {
+//     const attendance = await groupService.markAttendance(req.body);
+//     res.status(201).json(attendance);
+//   } catch (error: unknown) {
+//     if (error instanceof Error) {
+//       return res.status(500).json({ error: error.message });
+//     }
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
+export const markAttendanceController = async (req: Request, res: Response) => {
+  try {
+    const { sessionId, studentId, status, joinedAt, leftAt } = req.body;
+
+    const attendance = await groupService.markAttendance({
+      session_id: sessionId,
+      student_id: studentId,
+      status,
+      joined_at: joinedAt || null,
+      left_at: leftAt || null,
+    });
+
+    res.status(201).json(attendance);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return res.status(500).json({ error: error.message });
+    }
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
+export const getSessionAttendanceController = async (req: Request, res: Response) => {
+  try {
+    const attendance = await groupService.getSessionAttendance(req.params.session_id);
+    res.json(attendance);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return res.status(500).json({ error: error.message });
+    }
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
+export const getGroupAttendanceController = async (req: Request, res: Response) => {
+  try {
+    const { groupId } = req.params;
+    const attendance = await groupService.getGroupAttendance(groupId);
+    res.status(200).json(attendance);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return res.status(500).json({ error: error.message });
+    }
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+// Add/Update session note
+export const addSessionNoteController = async (req: Request, res: Response) => {
+  try {
+    const { sessionId } = req.params;
+    const { session_note } = req.body;
+
+    if (!session_note) {
+      return res.status(400).json({ error: "session_note is required" });
+    }
+
+    const updatedSession = await groupService.addSessionNote(sessionId, session_note);
+    res.status(200).json(updatedSession);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return res.status(500).json({ error: error.message });
+    }
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
+export const updateStudentNoteController = async (req: Request, res: Response) => {
+  const { studentId } = req.params;
+  const { sessionId, note } = req.body;
+
+  try {
+    const updated = await groupService.updateStudentNote({ sessionId, studentId, note });
+    res.status(200).json(updated);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return res.status(500).json({ error: error.message });
+    }
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};

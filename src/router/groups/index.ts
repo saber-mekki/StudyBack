@@ -10,7 +10,12 @@ import {
   getStudentGroupSessionsController,
   getGroupsByStudentController,
   deleteGroupController,
-  closeSessionController
+  closeSessionController,
+  getSessionAttendanceController,
+  markAttendanceController,
+  getGroupAttendanceController,
+  addSessionNoteController,
+  updateStudentNoteController
 } from "../../controllers/groups";
 
 const router = express.Router();
@@ -284,4 +289,82 @@ router.delete("/groups/:id", deleteGroupController);
 router.put("/groups/sessions/:id/close", closeSessionController);
 
 
+/**
+ * @swagger
+ * /sessions/{session_id}/attendance:
+ *   get:
+ *     tags: [Groups]
+ *     summary: Get attendance list of a session
+ *     parameters:
+ *       - in: path
+ *         name: session_id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: List of students with attendance status
+ */
+router.get("/sessions/:session_id/attendance", getSessionAttendanceController);
+
+/**
+ * @swagger
+ * /sessions/attendance:
+ *   post:
+ *     tags: [Groups]
+ *     summary: Mark attendance for a student in a session
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               session_id:
+ *                 type: integer
+ *               student_id:
+ *                 type: integer
+ *               status:
+ *                 type: string
+ *                 enum: [present, absent, late]
+ *     responses:
+ *       201:
+ *         description: Attendance marked
+ */
+router.post("/sessions/attendance", markAttendanceController);
+
+router.get("/groups/:groupId/attendance", getGroupAttendanceController);
+
+/**
+ * @swagger
+ * /sessions/{sessionId}/note:
+ *   put:
+ *     tags: [Groups]
+ *     summary: Add or update a note for a session
+ *     parameters:
+ *       - in: path
+ *         name: sessionId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Session ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               session_note:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Session note updated successfully
+ *       404:
+ *         description: Session not found
+ *       500:
+ *         description: Internal server error
+ */
+router.put("/sessions/:sessionId/note", addSessionNoteController);
+router.put("/sessions/attendance/:studentId/note", updateStudentNoteController);
 export default router;
