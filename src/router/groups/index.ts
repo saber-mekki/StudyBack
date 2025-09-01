@@ -15,10 +15,15 @@ import {
   markAttendanceController,
   getGroupAttendanceController,
   addSessionNoteController,
-  updateStudentNoteController
+  updateStudentNoteController,
+  uploadSessionPDFController,
+  getSessionPDFsController,
+  deleteSessionPDFController
 } from "../../controllers/groups";
 
 const router = express.Router();
+import multer from "multer";
+const upload = multer();
 
 /**
  * @swagger
@@ -367,4 +372,7 @@ router.get("/groups/:groupId/attendance", getGroupAttendanceController);
  */
 router.put("/sessions/:sessionId/note", addSessionNoteController);
 router.put("/sessions/attendance/:studentId/note", updateStudentNoteController);
+router.post("/sessions/upload-pdf", upload.single("session_pdf"), uploadSessionPDFController);
+router.get("/sessions/:sessionId/pdfs", getSessionPDFsController);
+router.delete("/sessions/:sessionId/pdfs/:pdfId", deleteSessionPDFController);
 export default router;

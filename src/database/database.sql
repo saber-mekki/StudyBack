@@ -182,11 +182,18 @@ CREATE TABLE group_sessions (
     end_time TIME NOT NULL,
     status VARCHAR(50) DEFAULT 'active', --closed
     meeting_link TEXT,
-     session_note TEXT NULL 
+     session_note TEXT NULL
 );
-
 ALTER TABLE group_sessions
 ADD COLUMN session_note TEXT NULL;
+
+CREATE TABLE session_pdfs (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    session_id UUID NOT NULL REFERENCES group_sessions(id) ON DELETE CASCADE,
+    file_url TEXT NOT NULL,
+    uploaded_at TIMESTAMP DEFAULT now()
+);
+
 
 CREATE TABLE tutor_cours_ratings (
     id SERIAL PRIMARY KEY,

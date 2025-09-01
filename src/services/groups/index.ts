@@ -1,4 +1,16 @@
 import { executeSQLQuery } from "../../database";
+import multer from "multer";
+import AWS from "aws-sdk";
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
+// Configure AWS S3
+const s3 = new AWS.S3({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION,
+});
 
 export const createGroup = async ({
   name,
@@ -80,12 +92,12 @@ export const getGroupById = async (id: any) => {
   GROUP BY g.id, u.user_name
   ORDER BY g.name;
 `;
-try {
-  const result = await executeSQLQuery(query, [id]);
-  return result.rows;
-} catch (error) {
-  throw new Error("Error fetching tutor groups: " + error);
-}
+  try {
+    const result = await executeSQLQuery(query, [id]);
+    return result.rows;
+  } catch (error) {
+    throw new Error("Error fetching tutor groups: " + error);
+  }
 };
 
 
@@ -95,7 +107,7 @@ export const addStudentToGroup = async (body: any) => {
     VALUES ($1, $2)
     RETURNING *
   `;
-  console.log({nnnn:body.students,kk:!Array.isArray(body.students) ,oo:body.students.length === 0,ggggg:body.groupId})
+  console.log({ nnnn: body.students, kk: !Array.isArray(body.students), oo: body.students.length === 0, ggggg: body.groupId })
   if (!body.groupId) {
     throw new Error("groupId is required");
   }
@@ -105,12 +117,12 @@ export const addStudentToGroup = async (body: any) => {
   }
 
   try {
-   
+
     const promises = body.students.map((studentId: any) =>
       executeSQLQuery(query, [body.groupId, studentId])
     );
     const results = await Promise.all(promises);
-    console.log({results})
+    console.log({ results })
     return results.map(r => r.rows[0]);
   } catch (error) {
     throw new Error("Error adding student to group: " + error);
@@ -317,7 +329,7 @@ export const markAttendance = async ({
       END
     RETURNING *;
   `;
-  
+
   const values = [session_id, student_id, status, joined_at || null, left_at || null];
 
   try {
@@ -434,5 +446,77 @@ export const updateStudentNote = async ({
   }
 
 
+};
+
+
+
+export const uploadService = {
+  uploadPDFToS3: async (file: Express.Multer.File) => {
+    const params = {
+      Bucket: process.env.AWS_BUCKET_NAME!,
+      Key: `sessions/${Date.now()}-${file.originalname}`,
+      Body: file.buffer,
+      ContentType: file.mimetype,
+    };
+
+    try {
+      const data = await s3.upload(params).promise();
+      return data.Location;
+    } catch (error) {
+      console.error("S3 PDF Upload Error:", error);
+      throw new Error("PDF upload failed");
+    }
+  },
+
+  saveSessionPDF: async (sessionId: string, pdfUrl: string) => {
+    const query = `
+      INSERT INTO session_pdfs (session_id, file_url)
+      VALUES ($1, $2)
+      RETURNING *
+    `;
+    try {
+      const result = await executeSQLQuery(query, [sessionId, pdfUrl]);
+      return result.rows[0];
+    } catch (error) {
+      console.error("Error saving PDF URL:", error);
+      throw new Error("Saving PDF failed");
+    }
+  },
+
+  deleteSessionPDF: async (pdfId: string) => {
+
+    const fetchQuery = `SELECT file_url FROM session_pdfs WHERE id = $1`;
+    const fetchResult = await executeSQLQuery(fetchQuery, [pdfId]);
+    const pdf = fetchResult.rows[0];
+    if (!pdf) return null;
+
+
+    const url = new URL(pdf.file_url);
+    const key = decodeURIComponent(url.pathname.substring(1));
+
+
+    await s3.deleteObject({
+      Bucket: process.env.AWS_BUCKET_NAME!,
+      Key: key,
+    }).promise();
+
+
+    const deleteQuery = `DELETE FROM session_pdfs WHERE id = $1 RETURNING *`;
+    const deleteResult = await executeSQLQuery(deleteQuery, [pdfId]);
+
+    return deleteResult.rows[0];
+  },
+
+
+  getSessionPDFs: async (sessionId: string) => {
+    const query = `
+      SELECT id, file_url, uploaded_at
+      FROM session_pdfs
+      WHERE session_id = $1
+      ORDER BY uploaded_at DESC
+    `;
+    const result = await executeSQLQuery(query, [sessionId]);
+    return result.rows;
+  },
 };
 

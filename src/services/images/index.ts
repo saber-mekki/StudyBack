@@ -29,7 +29,7 @@ export const uploadService = {
     };
 
     try {
-      console.log({cc: "saber"})
+
       const data = await s3.upload(params).promise();
       return data.Location; // Returns image URL
     } catch (error) {

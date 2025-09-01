@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import * as groupService from "../../services/groups";
+import {uploadService} from "../../services/groups";
 
 export const createGroupController = async (req: Request, res: Response) => {
   try {
@@ -144,17 +145,6 @@ export const closeSessionController = async (req: Request, res: Response) => {
   }
 };
 
-// export const markAttendanceController = async (req: Request, res: Response) => {
-//   try {
-//     const attendance = await groupService.markAttendance(req.body);
-//     res.status(201).json(attendance);
-//   } catch (error: unknown) {
-//     if (error instanceof Error) {
-//       return res.status(500).json({ error: error.message });
-//     }
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// };
 export const markAttendanceController = async (req: Request, res: Response) => {
   try {
     const { sessionId, studentId, status, joinedAt, leftAt } = req.body;
@@ -236,5 +226,49 @@ export const updateStudentNoteController = async (req: Request, res: Response) =
       return res.status(500).json({ error: error.message });
     }
     res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+export const uploadSessionPDFController = async (req: Request, res: Response) => {
+  try {
+    const { session_id } = req.body;
+    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+
+    const pdfUrl = await uploadService.uploadPDFToS3(req.file);
+
+    const newPDF = await uploadService.saveSessionPDF(session_id, pdfUrl);
+
+    res.status(200).json(newPDF);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getSessionPDFsController = async (req: Request, res: Response) => {
+  try {
+    const { sessionId } = req.params;
+
+    const pdfs = await uploadService.getSessionPDFs(sessionId);
+
+    res.status(200).json(pdfs);
+  } catch (error: any) {
+    console.error("Error fetching session PDFs:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const deleteSessionPDFController = async (req: Request, res: Response) => {
+  try {
+    const { pdfId } = req.params;
+
+    const deletedPDF = await uploadService.deleteSessionPDF(pdfId);
+
+    if (!deletedPDF) {
+      return res.status(404).json({ error: "PDF not found" });
+    }
+
+    res.status(200).json({ message: "PDF deleted successfully", deletedPDF });
+  } catch (error: any) {
+    console.error("Error deleting PDF:", error);
+    res.status(500).json({ error: error.message });
   }
 };
