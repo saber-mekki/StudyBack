@@ -1,9 +1,8 @@
 import { executeSQLQuery } from "../../database";
-import multer from "multer";
 import AWS from "aws-sdk";
+import { URL } from "url";
 
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
+
 
 // Configure AWS S3
 const s3 = new AWS.S3({
