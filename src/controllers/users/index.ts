@@ -172,13 +172,18 @@ export const addUserController = async (req: Request, res: Response) => {
 
     // Setup email transporter
     const transporter = nodemailer.createTransport({
-      service: "gmail", 
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false, // use STARTTLS
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        pass: process.env.EMAIL_PASS, // must be an App Password if 2FA is enabled
       },
+      tls: {
+        rejectUnauthorized: false, // bypass strict TLS if VPS has SSL issues
+      },
+      connectionTimeout: 10000, // 10s timeout instead of hanging
     });
-
     // Send verification email
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
