@@ -1,3 +1,7 @@
+import dns from "dns";
+import nodemailer from "nodemailer";
+import axios from "axios";
+
 import {
   addUser,
   deleteUser,
@@ -13,9 +17,11 @@ import {
   updateUserStatus,
   updateUserDetails,
   showStatus,
-  getUserById
+  getUserById,
+  verifyUserService
 } from "../../services/users";
 import { Request, Response } from "express";
+import jwt from "jsonwebtoken";
 
 import { jwtTokens } from "../../helpers/index";
 
@@ -24,6 +30,11 @@ export const loginUserController = async (req: Request, res: Response) => {
 
   try {
     const result = await loginUser(email as string, password as string);
+    if (!result.is_verified) {
+      return res.status(403).json({
+        error: "Please verify your email before logging in.",
+      });
+    }
     let tokens = jwtTokens(result.user_id, result.user_name, result.user_email);
     res.cookie("refresh_token", tokens.refreshToken, {
       ...(process.env.COOKIE_DOMAIN && { domain: process.env.COOKIE_DOMAIN }),
@@ -130,25 +141,67 @@ export const updatePasswordController = async (req: Request, res: Response) => {
   }
 };
 
+const verifyCaptcha = async (token: string) => {
+  const secret = process.env.RECAPTCHA_SECRET_KEY!;
+  const response:any = await axios.post(
+    "https://www.google.com/recaptcha/api/siteverify",
+    null,
+    {
+      params: { secret, response: token },
+    }
+  );
+  return response.data.success;
+};
+
+
+
 export const addUserController = async (req: Request, res: Response) => {
-  const { id, name, email, password, type_register, phone_number, gender } =
-    req.body;
+  const { name, email, password, type_register, phone_number, gender ,captchaToken} = req.body;
+
   try {
-    await addUser(
-      /* 			id as string,
-       */ name as string,
-      email as string,
-      password as string,
-      type_register as string,
-      phone_number as string,
-      gender as string
-    );
-    res.status(200).send({ error: false, message: "User added successfully" });
+    const human = await verifyCaptcha(captchaToken);
+    if (!human) {
+      return res.status(400).json({ error: "Captcha verification failed" });
+    }
+    // Save user (status = waiting, is_verified = false by default)
+    await addUser(name, email, password, type_register, phone_number, gender);
+
+    // Create token valid for 24h
+    const token = jwt.sign({ email }, process.env.JWT_SECRET!, { expiresIn: "1d" });
+    const verifyUrl = `${process.env.FRONTEND_URL}/verify?token=${token}`;
+
+    // Setup email transporter
+    const transporter = nodemailer.createTransport({
+      service: "gmail", 
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    // Send verification email
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "Verify your email",
+      html: `
+        <h3>Welcome, ${name}!</h3>
+        <p>Please verify your email by clicking the link below:</p>
+        <a href="${verifyUrl}">${verifyUrl}</a>
+        <p>This link will expire in 24 hours.</p>
+      `,
+    });
+
+    return res.status(200).json({
+      error: false,
+      message: "User registered. Please check your email to verify your account.",
+    });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({ error: "Internal server error " });
+    console.error(error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 export const deleteUserController = async (req: Request, res: Response) => {
   const { id } = req.body;
@@ -161,21 +214,39 @@ export const deleteUserController = async (req: Request, res: Response) => {
   }
 };
 
+const checkDomain = (email: string): Promise<boolean> => {
+  return new Promise((resolve) => {
+    const domain = email.split("@")[1];
+    if (!domain) {
+      return resolve(false);
+    }
+
+    dns.resolveMx(domain, (err, addresses) => {
+      if (err || !addresses || addresses.length === 0) {
+        resolve(false);
+      } else {
+        resolve(true);
+      }
+    });
+  });
+};
+
 export const CheckUserExistController = async (req: Request, res: Response) => {
   const { email } = req.body;
 
   try {
-    const emailExists = await checkUser(email);
+    const emailExists = await checkUser(email); 
+    const isDomainValid = await checkDomain(email); 
 
-    if (emailExists) {
-      return res.status(200).json({ exists: true });
-    } else {
-      return res.status(200).json({ exists: false });
-    }
+    return res.status(200).json({
+      exists: emailExists,
+      domainValid: isDomainValid,
+    });
   } catch (err) {
     return res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 export const getRefreshTokenController = async (
   req: Request,
@@ -269,7 +340,7 @@ export const UpdateStatusController = async (req: Request, res: Response) => {
   if (!id || !status) {
     return res.status(400).json({ error: true, message: "Email and status are required." });
   }
-
+ 
   if (!validStatuses.includes(status)) {
     return res.status(400).json({
       error: true,
@@ -344,5 +415,26 @@ export const getUserByIdController = async (req: Request, res: Response) => {
       error: true,
       message: (error as Error).message || "Internal server error",
     });
+  }
+};
+
+export const verifyUserController = async (req: Request, res: Response) => {
+  const { token } = req.query;
+
+  try {
+    if (!token) {
+      return res.status(400).json({ success: false, message: "No token provided" });
+    }
+
+    const result = await verifyUserService(token as string);
+
+    if (result.success) {
+      return res.status(200).json(result);
+    } else {
+      return res.status(400).json(result);
+    }
+  } catch (err) {
+    console.error("Verify error:", err);
+    return res.status(500).json({ success: false, message: "Internal server error" });
   }
 };

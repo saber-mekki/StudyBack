@@ -48,9 +48,10 @@ CREATE TABLE users(
   date_of_birth DATE,
   photo TEXT,  
   bio TEXT ,
+  is_verified  BOOLEAN DEFAULT false,
   status TEXT DEFAULT 'waiting' CHECK (status IN ('accepted', 'rejected', 'waiting', 'approved'))
 );
-
+ALTER TABLE users ADD COLUMN is_verified BOOLEAN DEFAULT false;
 
 ALTER TABLE users ADD CONSTRAINT status_check CHECK (status IN ('accepted', 'rejected', 'waiting','aproved'))
 

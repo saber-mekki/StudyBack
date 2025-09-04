@@ -15,6 +15,7 @@ import {
   UpdateStatusController,
   ShowStatusController,
   getUserByIdController,
+  verifyUserController
 } from "../../controllers/users";
 import { authenticateToken } from "../../helpers";
 
@@ -829,5 +830,6 @@ router.route("/status").post(UpdateStatusController);
  *         description: Internal server error.
  */
 router.route("/showStatus").post(ShowStatusController);
+router.get("/verify", verifyUserController);
 
 export default router;

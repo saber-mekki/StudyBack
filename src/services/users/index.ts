@@ -120,7 +120,7 @@ export const updatePassword = async (email: string, newPassword: string) => {
 };
 
 export const loginUser = async (email: string, password: string) => {
-  const query = `SELECT user_id ,user_email, user_password,type_register ,user_name FROM public."users" WHERE user_email = $1`;
+  const query = `SELECT user_id ,user_email, user_password,type_register ,user_name , is_verified FROM public."users" WHERE user_email = $1`;
   const result = await executeSQLQuery(query, [email]);
   if (result.rows.length == 0) {
     throw new Error("Invalid email or password");
@@ -191,7 +191,7 @@ export const addTutor = async (
       INSERT INTO tutors (tutor_email, country, price_per_hour, specialty, degree, languages, availability)
       VALUES ($1, $2, $3, $4, $5, $6, $7)
     `;
-    
+
     const result = await executeSQLQuery(query, [
       tutor_email,
       country,
@@ -223,6 +223,7 @@ export const updateUserDetails = async (email: string, bio: string, photo: strin
   const result = await executeSQLQuery(query, values);
   return result.rows[0];
 };
+
 export const updateUserStatus = async (id: string, status: string) => {
   const query = `
     UPDATE public.users 
@@ -233,10 +234,11 @@ export const updateUserStatus = async (id: string, status: string) => {
   const values = [status, id];
   const result = await executeSQLQuery(query, values);
 
-  console.log("Update query result:", result.rows); 
+  console.log("Update query result:", result.rows);
 
   return result;
 };
+
 export const showStatus = async (id: string): Promise<string | null> => {
   const query = "SELECT status FROM public.users WHERE user_id = $1";
   const values = [id];
@@ -244,7 +246,7 @@ export const showStatus = async (id: string): Promise<string | null> => {
   const result = await executeSQLQuery(query, values);
 
   if (result.rows.length === 0) {
-    return null; 
+    return null;
   }
 
   return result.rows[0].status;
@@ -267,5 +269,21 @@ export const getUserById = async (userId: string) => {
   `;
   const values = [userId];
   const result = await executeSQLQuery(query, values);
-  return result.rows[0]; // Return a single user
+  return result.rows[0];
+};
+
+export const verifyUserService = async (token: string) => {
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { email: string };
+    const result = await executeSQLQuery(
+      "UPDATE public.users SET is_verified = true WHERE user_email = $1 RETURNING user_email",
+      [decoded.email]
+    );
+    if (result.rowCount === 0) {
+      return { success: false, message: "User not found" };
+    }
+    return { success: true, message: "Email verified successfully" };
+  } catch (err) {
+    return { success: false, message: "Invalid or expired token" };
+  }
 };
