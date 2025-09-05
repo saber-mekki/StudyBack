@@ -287,3 +287,33 @@ export const verifyUserService = async (token: string) => {
     return { success: false, message: "Invalid or expired token" };
   }
 };
+
+export const makeAdmin = async (id: any) => {
+  const query =  `
+  UPDATE public.users 
+  SET type_register = 'admin'
+  WHERE user_id = $1
+  RETURNING user_id, user_name, user_email, type_register;
+`;
+  const values = [id];
+  const result = await executeSQLQuery(query, values);
+  return result.rows[0];
+};
+
+export const verifyService = {
+  verifyUserPassword: async (userId:any, password:any) => {
+    try {
+      const result = await executeSQLQuery(
+        "SELECT user_password FROM users WHERE user_id = $1",
+        [userId]
+      );
+      if (result.rows.length === 0) return false;
+      const hashedPassword = result.rows[0].user_password
+      const isMatch = await bcrypt.compare(password, hashedPassword);
+      return isMatch;
+    } catch (err) {
+      console.error("verifyUserPassword error:", err);
+      return false;
+    }
+  },
+};

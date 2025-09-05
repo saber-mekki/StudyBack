@@ -18,7 +18,8 @@ import {
   updateUserDetails,
   showStatus,
   getUserById,
-  verifyUserService
+  verifyUserService,
+  makeAdmin,verifyService
 } from "../../services/users";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
@@ -442,4 +443,39 @@ export const verifyUserController = async (req: Request, res: Response) => {
     console.error("Verify error:", err);
     return res.status(500).json({ success: false, message: "Internal server error" });
   }
+};
+
+export const makeAdminController = async (req: Request, res: Response) => {
+  const { id } = req.body;
+
+  try {
+
+    const updatedUser = await makeAdmin(id);
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: true, message: "User not found" });
+    }
+
+    return res.status(200).json({
+      error: false,
+      message: `✅ ${updatedUser.user_name} has been promoted to admin.`,
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error("Error in makeAdminController:", error);
+    return res.status(500).json({ error: true, message: "Internal server error" });
+  }
+};
+
+export   const verifyController = {
+  verifyPassword: async (req: any, res: any) => {
+    try {
+      const { password,id } = req.body;
+      const isValid = await verifyService.verifyUserPassword(id, password);
+      res.json({ valid: isValid });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ valid: false, message: "Server error" });
+    }
+  },
 };

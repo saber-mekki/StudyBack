@@ -108,8 +108,6 @@ CREATE TABLE tutor_availability (
   status VARCHAR(20) DEFAULT 'available'
 );
 
-
-
 CREATE TABLE student_bookings (
   id SERIAL PRIMARY KEY,
   tutor_id UUID NOT NULL,
@@ -121,7 +119,6 @@ CREATE TABLE student_bookings (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
    live_link TEXT
 );
-
 
 CREATE TABLE notifications (
   id SERIAL PRIMARY KEY,
@@ -183,7 +180,7 @@ CREATE TABLE group_sessions (
     end_time TIME NOT NULL,
     status VARCHAR(50) DEFAULT 'active', --closed
     meeting_link TEXT,
-     session_note TEXT NULL
+    session_note TEXT NULL
 );
 ALTER TABLE group_sessions
 ADD COLUMN session_note TEXT NULL;

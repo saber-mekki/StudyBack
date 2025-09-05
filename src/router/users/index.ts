@@ -15,7 +15,9 @@ import {
   UpdateStatusController,
   ShowStatusController,
   getUserByIdController,
-  verifyUserController
+  verifyUserController,
+  makeAdminController,
+  verifyController
 } from "../../controllers/users";
 import { authenticateToken } from "../../helpers";
 
@@ -831,5 +833,74 @@ router.route("/status").post(UpdateStatusController);
  */
 router.route("/showStatus").post(ShowStatusController);
 router.get("/verify", verifyUserController);
+/**
+ * @swagger
+ * /makeAdmin:
+ *   post:
+ *     summary: Promote a user to admin
+ *     tags: [User]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: User promoted to admin
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
+ */
+router.route("/makeItAdmin").post(makeAdminController);
+
+/**
+ * @swagger
+ * /verifyPassword:
+ *   post:
+ *     summary: Verify current user password
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - password
+ *             properties:
+ *               password:
+ *                 type: string
+ *                 example: "mySecurePassword123"
+ *     responses:
+ *       200:
+ *         description: Password verification result
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 valid:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Password verified successfully"
+ *       401:
+ *         description: Unauthorized - missing or invalid JWT
+ *       403:
+ *         description: Forbidden - incorrect password
+ *       500:
+ *         description: Internal server error
+ */
+router.post("/verifyPassword",  verifyController.verifyPassword);
 
 export default router;
