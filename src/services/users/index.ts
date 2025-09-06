@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import AWS from "aws-sdk";
 import { executeSQLQuery } from "../../database";
 import { jwtTokens } from "../../helpers/index";
+import { URL } from "url";
 export const getUsers = async () => {
   const query = `
     SELECT u.*, t.country, t.price_per_hour, t.specialty, t.degree, t.languages, t.availability, t.rating ,t.is_active
