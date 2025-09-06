@@ -19,7 +19,7 @@ import {
   showStatus,
   getUserById,
   verifyUserService,
-  makeAdmin,verifyService
+  makeAdmin,verifyService,uploadService
 } from "../../services/users";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
@@ -478,4 +478,41 @@ export   const verifyController = {
       res.status(500).json({ valid: false, message: "Server error" });
     }
   },
+};
+
+export const uploadTutorPDFController = async (req: Request, res: Response) => {
+  try {
+    const { tutor_email, type } = req.body;
+    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+    if (!tutor_email || !type) return res.status(400).json({ error: "Missing tutor_email or type" });
+
+    const pdfUrl = await uploadService.uploadPDFToS3(req.file, "tutors");
+
+    const newPDF = await uploadService.saveTutorPDF(tutor_email, pdfUrl, type);
+
+    res.status(200).json(newPDF);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getTutorPDFsController = async (req: Request, res: Response) => {
+  try {
+    const { tutorEmail } = req.params;
+    const pdfs = await uploadService.getTutorPDFs(tutorEmail);
+    res.status(200).json(pdfs);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const deleteTutorPDFController = async (req: Request, res: Response) => {
+  try {
+    const { pdfId } = req.params;
+    const deletedPDF = await uploadService.deleteTutorPDF(pdfId);
+    if (!deletedPDF) return res.status(404).json({ error: "PDF not found" });
+    res.status(200).json({ message: "PDF deleted successfully", deletedPDF });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
 };

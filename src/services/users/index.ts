@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
-
+import AWS from "aws-sdk";
 import { executeSQLQuery } from "../../database";
 import { jwtTokens } from "../../helpers/index";
 export const getUsers = async () => {
@@ -315,5 +315,76 @@ export const verifyService = {
       console.error("verifyUserPassword error:", err);
       return false;
     }
+  },
+};
+
+
+const s3 = new AWS.S3({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+  region: process.env.AWS_REGION!,
+});
+
+export const uploadService = {
+  uploadPDFToS3: async (file: Express.Multer.File, folder: string) => {
+    const params = {
+      Bucket: process.env.AWS_BUCKET_NAME!,
+      Key: `${folder}/${Date.now()}-${file.originalname}`,
+      Body: file.buffer,
+      ContentType: file.mimetype,
+    };
+
+    try {
+      const data = await s3.upload(params).promise();
+      return data.Location;
+    } catch (error) {
+      console.error("S3 PDF Upload Error:", error);
+      throw new Error("PDF upload failed");
+    }
+  },
+
+  saveTutorPDF: async (tutorEmail: string, pdfUrl: string, type: string) => {
+    const query = `
+      INSERT INTO tutor_pdfs (tutor_email, file_url, type)
+      VALUES ($1, $2, $3)
+      RETURNING *
+    `;
+    try {
+      const result = await executeSQLQuery(query, [tutorEmail, pdfUrl, type]);
+      return result.rows[0];
+    } catch (error) {
+      console.error("Error saving PDF URL:", error);
+      throw new Error("Saving PDF failed");
+    }
+  },
+
+  getTutorPDFs: async (tutorEmail: string) => {
+    const query = `
+      SELECT id, file_url, type, uploaded_at
+      FROM tutor_pdfs
+      WHERE tutor_email = $1
+      ORDER BY uploaded_at DESC
+    `;
+    const result = await executeSQLQuery(query, [tutorEmail]);
+    return result.rows;
+  },
+
+  deleteTutorPDF: async (pdfId: string) => {
+    const fetchQuery = `SELECT file_url FROM tutor_pdfs WHERE id = $1`;
+    const fetchResult = await executeSQLQuery(fetchQuery, [pdfId]);
+    const pdf = fetchResult.rows[0];
+    if (!pdf) return null;
+
+    const url = new URL(pdf.file_url);
+    const key = decodeURIComponent(url.pathname.substring(1));
+
+    await s3.deleteObject({
+      Bucket: process.env.AWS_BUCKET_NAME!,
+      Key: key,
+    }).promise();
+
+    const deleteQuery = `DELETE FROM tutor_pdfs WHERE id = $1 RETURNING *`;
+    const deleteResult = await executeSQLQuery(deleteQuery, [pdfId]);
+    return deleteResult.rows[0];
   },
 };

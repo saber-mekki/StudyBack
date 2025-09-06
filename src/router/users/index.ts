@@ -17,9 +17,15 @@ import {
   getUserByIdController,
   verifyUserController,
   makeAdminController,
-  verifyController
+  verifyController,
+  uploadTutorPDFController,
+  getTutorPDFsController,
+  deleteTutorPDFController,
 } from "../../controllers/users";
 import { authenticateToken } from "../../helpers";
+import multer from "multer";
+
+const upload = multer({ storage: multer.memoryStorage() });
 
 const router = express.Router();
 
@@ -902,5 +908,77 @@ router.route("/makeItAdmin").post(makeAdminController);
  *         description: Internal server error
  */
 router.post("/verifyPassword",  verifyController.verifyPassword);
+
+
+/**
+ * @swagger
+ * tags:
+ *   name: TutorUpload
+ *   description: Upload tutor documents (ID, degree)
+ */
+
+/**
+ * @swagger
+ * /tutors/upload-pdf:
+ *   post:
+ *     summary: Upload a tutor PDF to S3
+ *     tags: [TutorUpload]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               tutor_email:
+ *                 type: string
+ *               type:
+ *                 type: string
+ *                 description: "ID or degree"
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: PDF uploaded successfully
+ */
+router.post("/tutors/upload-pdf", upload.single("file"), uploadTutorPDFController);
+
+/**
+ * @swagger
+ * /tutors/{tutorEmail}/pdfs:
+ *   get:
+ *     summary: Get all PDFs for a tutor
+ *     tags: [TutorUpload]
+ *     parameters:
+ *       - in: path
+ *         name: tutorEmail
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of PDFs
+ */
+router.get("/tutors/:tutorEmail/pdfs", getTutorPDFsController);
+
+/**
+ * @swagger
+ * /tutors/pdfs/{pdfId}:
+ *   delete:
+ *     summary: Delete a tutor PDF by ID
+ *     tags: [TutorUpload]
+ *     parameters:
+ *       - in: path
+ *         name: pdfId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: PDF deleted successfully
+ */
+router.delete("/tutors/pdfs/:pdfId", deleteTutorPDFController);
+
 
 export default router;

@@ -243,7 +243,15 @@ CREATE TABLE session_attendance (
     UNIQUE (session_id, student_id)
 );
 
-SELECT * FROM users;
+CREATE TABLE tutor_pdfs (
+  id SERIAL PRIMARY KEY,
+  tutor_email TEXT REFERENCES tutors(tutor_email) ON DELETE CASCADE,
+  file_url TEXT NOT NULL,
+  type TEXT NOT NULL,  -- e.g., "ID", "Degree"
+  uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+SELECT * FROM tutor_pdfs;
 
 INSERT INTO users (user_name,user_email,user_password) VALUES ('test','test@test.com','test');
 
