@@ -251,6 +251,26 @@ CREATE TABLE tutor_pdfs (
   uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE announcements (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    recipient_type TEXT NOT NULL CHECK (recipient_type IN ('all', 'students', 'tutors', 'custom')),
+    pdf_url TEXT,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+
+CREATE TABLE announcement_users (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    announcement_id UUID REFERENCES announcements(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES users(user_id) ON DELETE CASCADE,
+    is_read BOOLEAN DEFAULT false
+);
+
+ALTER TABLE announcement_users
+ADD COLUMN is_read BOOLEAN DEFAULT false;
+
 SELECT * FROM tutor_pdfs;
 
 INSERT INTO users (user_name,user_email,user_password) VALUES ('test','test@test.com','test');
