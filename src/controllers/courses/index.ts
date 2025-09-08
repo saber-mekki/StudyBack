@@ -1,8 +1,10 @@
-import { addOrUpdateRatingS,getCourseRatingsS,getUserRatingsS,getCoursesByUserId, AddCourseVideo, CreateCourse, GetAllCourses, AddCoursePdf ,GetCourseById,GetCourseVideos,GetCoursePdfs} from "../../services/courses";
+import {  GetRelatedCourses ,addOrUpdateRatingS,getCourseRatingsS,getUserRatingsS,getCoursesByUserId, AddCourseVideo, CreateCourse, GetAllCourses, AddCoursePdf ,GetCourseById,GetCourseVideos,GetCoursePdfs} from "../../services/courses";
 import { Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid"; 
 import path from "path";
 import fs from "fs";
+import {} from "../../services/courses";
+
 
 import { CreatePDF } from "../../services/courses";
 import { s3 } from "../../helpers";
@@ -251,5 +253,23 @@ export const getUserRatings = async (req: Request, res: Response) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
+export const GetRelatedCoursesController = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const course = await GetCourseById(id);
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    const relatedCourses = await GetRelatedCourses(id, course.category);
+    res.status(200).json({ relatedCourses });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching related courses" });
   }
 };

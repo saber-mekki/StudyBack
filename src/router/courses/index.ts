@@ -9,7 +9,7 @@ import {
   CreatePDFController
   , GetCourseByIdController
   ,getCoursesByUser
-  ,addOrUpdateRating,getCourseRatings,getUserRatings
+  ,addOrUpdateRating,getCourseRatings,getUserRatings,GetRelatedCoursesController
 } from "../../controllers/courses"
 
 const router = express.Router();
@@ -326,4 +326,5 @@ router.get("/rating/course/:courseId", getCourseRatings);
 // GET → all ratings of a user
 router.get("/rating/user/:userId", getUserRatings);
 
+router.get("/courses/:id/related", GetRelatedCoursesController);
 module.exports = router;

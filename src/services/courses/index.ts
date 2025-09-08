@@ -210,3 +210,15 @@ export async function getUserRatingsS(userId: any){
   );
   return result.rows;
 }
+
+
+export const GetRelatedCourses = async (courseId: string, category: string) => {
+  const query = `
+    SELECT * 
+    FROM courses 
+    WHERE category = $1 AND id != $2
+    LIMIT 5;
+  `;
+  const result = await executeSQLQuery(query, [category, courseId]);
+  return result.rows;
+};

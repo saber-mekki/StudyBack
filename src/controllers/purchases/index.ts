@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { CreatePurchase, GetPurchasesByUser } from "../../services/purchases";
+import { CreatePurchases, GetPurchasesByUser } from "../../services/purchases";
 
 export const CreatePurchaseController = async (req: Request, res: Response) => {
   try {
@@ -8,7 +8,7 @@ export const CreatePurchaseController = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const purchase = await CreatePurchase(courseId, studentId, paypalOrderId, amount);
+    const purchase = await CreatePurchases(courseId, studentId, paypalOrderId, amount);
     res.status(201).json({ success: true, purchase });
   } catch (err) {
     console.error("Error creating purchase:", err);

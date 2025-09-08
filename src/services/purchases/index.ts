@@ -1,21 +1,37 @@
 import { executeSQLQuery } from "../../database";
 import { v4 as uuidv4 } from "uuid";
 
-export const CreatePurchase = async (
-  courseId: string,
+export const CreatePurchases = async (
+  courseIds: string | string[], // ✅ accept single or array
   studentId: string,
   paypalOrderId: string,
-  amount: number
+  totalAmount: number
 ) => {
-  const query = `
-    INSERT INTO course_purchases 
-      (id, course_id, student_id, paypal_order_id, amount, status)
-    VALUES ($1, $2, $3, $4, $5, 'completed')
-    RETURNING *;
-  `;
-  const values = [uuidv4(), courseId, studentId, paypalOrderId, amount];
-  const result = await executeSQLQuery(query, values);
-  return result.rows[0];
+  const results = [];
+
+  const ids = Array.isArray(courseIds) ? courseIds : [courseIds];
+
+  const perCourseAmount = (totalAmount / ids.length).toFixed(2);
+
+  for (const courseId of ids) {
+    const query = `
+      INSERT INTO course_purchases 
+        (id, course_id, student_id, paypal_order_id, amount, status)
+      VALUES ($1, $2, $3, $4, $5, 'completed')
+      RETURNING *;
+    `;
+    const values = [
+      uuidv4(),
+      courseId,
+      studentId,
+      paypalOrderId,
+      perCourseAmount,
+    ];
+    const result = await executeSQLQuery(query, values);
+    results.push(result.rows[0]);
+  }
+
+  return results;
 };
 
 export const GetPurchasesByUser = async (studentId: string) => {
