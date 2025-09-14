@@ -3,12 +3,12 @@ import { CreatePurchases, GetPurchasesByUser } from "../../services/purchases";
 
 export const CreatePurchaseController = async (req: Request, res: Response) => {
   try {
-    const { courseId, studentId, paypalOrderId, amount } = req.body;
-    if (!courseId || !studentId || !paypalOrderId || !amount) {
+    const { courseIds, studentId, paypalOrderId, amount } = req.body;
+    if (!courseIds || !studentId || !paypalOrderId || !amount) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const purchase = await CreatePurchases(courseId, studentId, paypalOrderId, amount);
+    const purchase = await CreatePurchases(courseIds, studentId, paypalOrderId, amount);
     res.status(201).json({ success: true, purchase });
   } catch (err) {
     console.error("Error creating purchase:", err);

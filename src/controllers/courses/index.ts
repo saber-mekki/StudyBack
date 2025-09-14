@@ -43,10 +43,11 @@ export const CreateCourseController = async (req: Request, res: Response) => {
       const imageKey = `courses/images/${uuidv4()}-${imageFile.originalname}`;
       const fileBuffer = fs.readFileSync(imageFile.path);
       const uploadImageParams: any = {
-        Bucket: process.env.AWS_BUCKET_NAME,
+        Bucket:process.env.AWS_BUCKET_PUBLIC!,
         Key: imageKey,
         Body: fileBuffer,
         ContentType: imageFile.mimetype,
+         CL: "public-read"
       };
       const uploadedImage = await s3.upload(uploadImageParams).promise();
       imageUrl = uploadedImage.Location;
@@ -56,10 +57,11 @@ export const CreateCourseController = async (req: Request, res: Response) => {
         const videoKey = `courses/videos/${uuidv4()}-${video.originalname}`;
         const fileBuffer = fs.readFileSync(video.path);
         const uploadVideoParams: any = {
-          Bucket: process.env.AWS_BUCKET_NAME,
+          Bucket: process.env.AWS_BUCKET_PRIVATE!,
           Key: videoKey,
           Body: fileBuffer,
           ContentType: video.mimetype,
+          ACL: 'private',
         };
         const uploadedVideo = await s3.upload(uploadVideoParams).promise();
         return {
@@ -74,13 +76,17 @@ export const CreateCourseController = async (req: Request, res: Response) => {
     if (req.files && pdfFile) {
       const uploadPromises = pdfFile.map(async (pdf: any, index: any) => {
         const pdfKey = `courses/pdfs/${uuidv4()}-${pdfFile.originalname}`;
+
         const fileBuffer = fs.readFileSync(pdf.path);
+
         const uploadPdfParams: any = {
-          Bucket: process.env.AWS_BUCKET_NAME,
+          Bucket: process.env.AWS_BUCKET_PRIVATE!,
           Key: pdfKey,
           Body: fileBuffer,
           ContentType: pdf.mimetype,
+          ACL: 'private',
         };
+
         const uploadedPdf = await s3.upload(uploadPdfParams).promise();
         return {
           file: uploadedPdf.Location,

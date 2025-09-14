@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-
+import AWS from "aws-sdk";
 import { executeSQLQuery } from "../../database";
 
 export const CreateCourse = async (
@@ -18,7 +18,6 @@ export const CreateCourse = async (
     syllabus: string,
     requirements: string,
     tutor_email :string 
-
   ) => {
     const query = `
       INSERT INTO public."courses" 
@@ -26,7 +25,6 @@ export const CreateCourse = async (
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13,$14,$15)
       RETURNING *;
     `;
-  
     const values = [
       id,
       tutor_id,
@@ -121,12 +119,36 @@ export const CreateCourse = async (
     return result.rows[0]; 
   };
 
+  const s3 = new AWS.S3({
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+    region: process.env.AWS_REGION!,
+  });
+  
+  export const getSignedUrlForPDF = (key: string) => {
+    const params = {
+      Bucket: process.env.AWS_BUCKET_PRIVATE!,
+      Key: key,
+      Expires: 60 * 5 
+    };
+    return s3.getSignedUrl('getObject', params);
+  };
+
   export const GetCourseVideos = async (courseId: string) => {
+    
     const result = await executeSQLQuery(
       `SELECT file, description FROM course_videos WHERE course_id = $1`,
       [courseId]
     );
-    return result.rows;
+    
+        return result.rows.map((row: any) => {
+          const url = new URL(row.file);
+          const key = decodeURIComponent(url.pathname.slice(1)); 
+          return {
+            ...row,
+            signed_url: getSignedUrlForPDF(key)
+          };
+        });
   };
   
   export const GetCoursePdfs = async (courseId: string) => {
@@ -134,7 +156,15 @@ export const CreateCourse = async (
       `SELECT file, description FROM course_pdfs WHERE course_id = $1`,
       [courseId]
     );
-    return result.rows;
+   
+    return result.rows.map((row: any) => {
+      const url = new URL(row.file);
+      const key = decodeURIComponent(url.pathname.slice(1)); 
+      return {
+        ...row,
+        signed_url: getSignedUrlForPDF(key)
+      };
+    });
   };
 
 

@@ -5,6 +5,7 @@ import AWS from "aws-sdk";
 import { executeSQLQuery } from "../../database";
 import { jwtTokens } from "../../helpers/index";
 import { URL } from "url";
+
 export const getUsers = async () => {
   const query = `
     SELECT u.*, t.country, t.price_per_hour, t.specialty, t.degree, t.languages, t.availability, t.rating ,t.is_active
@@ -36,6 +37,7 @@ export const addUser = async (
   password: string,
   type_register: string,
   phone_number: string,
+
   gender: string
 ) => {
   const saltRounds = 10;
@@ -326,13 +328,25 @@ const s3 = new AWS.S3({
   region: process.env.AWS_REGION!,
 });
 
+export const getSignedUrlForPDF = (key: string) => {
+  const params = {
+    Bucket: process.env.AWS_BUCKET_PRIVATE!,
+    Key: key,
+    Expires: 60 * 5 
+  };
+  return s3.getSignedUrl('getObject', params);
+};
+
 export const uploadService = {
   uploadPDFToS3: async (file: Express.Multer.File, folder: string) => {
+
+
     const params = {
-      Bucket: process.env.AWS_BUCKET_NAME!,
+      Bucket: process.env.AWS_BUCKET_PRIVATE!,
       Key: `${folder}/${Date.now()}-${file.originalname}`,
       Body: file.buffer,
       ContentType: file.mimetype,
+      ACL: 'private',
     };
 
     try {
@@ -367,7 +381,16 @@ export const uploadService = {
       ORDER BY uploaded_at DESC
     `;
     const result = await executeSQLQuery(query, [tutorEmail]);
-    return result.rows;
+
+    return result.rows.map((row: any) => {
+      const url = new URL(row.file_url);
+      const key = decodeURIComponent(url.pathname.slice(1)); 
+      return {
+        ...row,
+        signed_url: getSignedUrlForPDF(key)
+      };
+    });
+
   },
 
   deleteTutorPDF: async (pdfId: string) => {
@@ -380,7 +403,7 @@ export const uploadService = {
     const key = decodeURIComponent(url.pathname.substring(1));
 
     await s3.deleteObject({
-      Bucket: process.env.AWS_BUCKET_NAME!,
+      Bucket: process.env.AWS_BUCKET_PRIVATE!,
       Key: key,
     }).promise();
 

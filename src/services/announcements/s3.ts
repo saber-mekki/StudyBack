@@ -1,26 +1,30 @@
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { v4 as uuidv4 } from "uuid";
 import path from "path";
+import AWS from "aws-sdk";
 
-const s3 = new S3Client({
+const s3 = new AWS.S3({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
   region: process.env.AWS_REGION!,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-  },
 });
 
 export const uploadPdfToS3 = async (file: Express.Multer.File): Promise<string> => {
   const key = `announcements/${uuidv4()}${path.extname(file.originalname)}`;
-
-  const command = new PutObjectCommand({
-    Bucket: process.env.AWS_BUCKET_NAME!,
+  
+  const params = {
+    Bucket: process.env.AWS_BUCKET_PRIVATE!,
     Key: key,
     Body: file.buffer,
     ContentType: file.mimetype,
-  });
+    ACL: 'private',
+  };
 
-  await s3.send(command);
-
-  return `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+  try {
+    const data = await s3.upload(params).promise();
+    return data.Location;
+  } catch (error) {
+    console.error("S3 PDF Upload Error:", error);
+    throw new Error("PDF upload failed");
+  }
 };

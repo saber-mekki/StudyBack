@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import * as announcementService from "../../services/announcements";
 import { executeSQLQuery } from "../../database";
+import AWS from "aws-sdk";
 
 export const sendAnnouncement = async (req: Request, res: Response) => {
   try {
@@ -14,26 +15,39 @@ export const sendAnnouncement = async (req: Request, res: Response) => {
       pdf: req.file,
     });
 
-console.log({result})
-const announcement = result[0];
+    const announcement = result[0];
     res.status(201).json(announcement);
   } catch (err: any) {
     console.error(err);
     res.status(500).json({ error: "Failed to send announcement" });
   }
 };
+const s3 = new AWS.S3({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+  region: process.env.AWS_REGION!,
+});
+
+export const getSignedUrlForPDF = (key: string) => {
+  const params = {
+    Bucket: process.env.AWS_BUCKET_PRIVATE!,
+    Key: key,
+    Expires: 60 * 5
+  };
+  return s3.getSignedUrl('getObject', params);
+};
 
 export const getUserAnnouncements = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
-    const { userType } = req.query; // student | tutor | admin
+    const { userType } = req.query;
 
     const announcements = await announcementService.getAnnouncementsForUser(
       userId,
       userType as "student" | "tutor" | "admin"
     );
 
-    res.json(announcements.rows);
+    res.status(200).json(announcements);
   } catch (err: any) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch announcements" });
@@ -45,7 +59,7 @@ export const getAnnouncementsCount = async (req: Request, res: Response) => {
     const { userId } = req.params;
     const { userType } = req.query;
 
-    const announcements = await announcementService.getAnnouncementsForUser(
+    const announcements:any = await announcementService.getAnnouncementsForUser(
       userId,
       userType as "student" | "tutor" | "admin"
     );
@@ -60,13 +74,13 @@ export const getAnnouncementsCount = async (req: Request, res: Response) => {
 export const markAnnouncementAsRead = async (req: Request, res: Response) => {
   try {
     const { announcementId, userId } = req.body;
-   //announcementId not existe in the table 
- const test=   await executeSQLQuery(
+      //announcementId not existe in the table
+    const test = await executeSQLQuery(
       `UPDATE announcement_users SET is_read = true WHERE announcement_id = $1 AND user_id = $2 `,
       [announcementId, userId]
     );
 
-    res.json({test, success: true });
+    res.json({ test, success: true });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to mark as read" });

@@ -4,13 +4,6 @@ import { URL } from "url";
 
 
 
-// Configure AWS S3
-const s3 = new AWS.S3({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION,
-});
-
 export const createGroup = async ({
   name,
   description,
@@ -448,14 +441,29 @@ export const updateStudentNote = async ({
 };
 
 
+const s3 = new AWS.S3({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+  region: process.env.AWS_REGION!,
+});
+
+export const getSignedUrlForPDF = (key: string) => {
+  const params = {
+    Bucket: process.env.AWS_BUCKET_PRIVATE!,
+    Key: key,
+    Expires: 60 * 5 // 5 minutes
+  };
+  return s3.getSignedUrl('getObject', params);
+};
 
 export const uploadService = {
   uploadPDFToS3: async (file: Express.Multer.File) => {
     const params = {
-      Bucket: process.env.AWS_BUCKET_NAME!,
+      Bucket: process.env.AWS_BUCKET_PRIVATE!,
       Key: `sessions/${Date.now()}-${file.originalname}`,
       Body: file.buffer,
       ContentType: file.mimetype,
+      ACL: 'private',
     };
 
     try {
@@ -507,6 +515,8 @@ export const uploadService = {
   },
 
 
+
+
   getSessionPDFs: async (sessionId: string) => {
     const query = `
       SELECT id, file_url, uploaded_at
@@ -515,7 +525,38 @@ export const uploadService = {
       ORDER BY uploaded_at DESC
     `;
     const result = await executeSQLQuery(query, [sessionId]);
-    return result.rows;
+      return result.rows.map((row: any) => {
+        const url:any = row.file_url!==null?new URL(row.file_url):"";
+        const key = row.file_url!==null?decodeURIComponent(url.pathname.slice(1)):"";
+        return {
+          ...row,
+          signed_url: row.file_url!==null?getSignedUrlForPDF(key):null
+        };
+      });
+   
   },
+
+  uploadVideoToS3: async (file: Express.Multer.File) => {
+    const params = {
+      Bucket: process.env.AWS_BUCKET_PRIVATE!,
+      Key: `sessions/videos/${Date.now()}-${file.originalname}`,
+      Body: file.buffer,
+      ContentType: file.mimetype,
+      ACL: "private",
+    };
+    const data = await s3.upload(params).promise();
+    return data.Location;
+  },
+  
+  saveSessionVideo: async (sessionId: string, videoUrl: string) => {
+    const query = `
+      INSERT INTO session_videos (session_id, file_url)
+      VALUES ($1, $2)
+      RETURNING *;
+    `;
+    const result = await executeSQLQuery(query, [sessionId, videoUrl]);
+    return result.rows[0];
+  },
+  
 };
 
