@@ -1,6 +1,7 @@
 import { executeSQLQuery } from "../../database";
 import { uploadPdfToS3 } from "./s3";
 import AWS from "aws-sdk";
+import { URL } from 'url';
 interface AnnouncementInput {
   title: string;
   content: string;
