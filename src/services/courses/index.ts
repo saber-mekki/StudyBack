@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import AWS from "aws-sdk";
 import { executeSQLQuery } from "../../database";
+import { URL } from 'url';
 
 export const CreateCourse = async (
   id:string,
