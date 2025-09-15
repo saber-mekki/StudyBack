@@ -8,7 +8,7 @@ import { URL } from "url";
 
 export const getUsers = async () => {
   const query = `
-    SELECT u.*, t.country, t.price_per_hour, t.specialty, t.degree, t.languages, t.availability, t.rating ,t.is_active
+    SELECT u.*, t.country, t.price_per_hour, t.specialty, t.degree, t.languages, t.availability, t.rating ,t.is_active,t.cover_letter
     FROM public.users u
     LEFT JOIN public.tutors t ON u.user_email = t.tutor_email
     WHERE u.type_register = 'tutor' OR u.type_register != 'tutor'
@@ -188,11 +188,12 @@ export const addTutor = async (
   degree: string,
   languages: string[],
   availability: string
+  ,cover_letter: string 
 ) => {
   try {
     const query = `
-      INSERT INTO tutors (tutor_email, country, price_per_hour, specialty, degree, languages, availability)
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      INSERT INTO tutors (tutor_email, country, price_per_hour, specialty, degree, languages, availability,cover_letter)
+      VALUES ($1, $2, $3, $4, $5, $6, $7,$8)
     `;
 
     const result = await executeSQLQuery(query, [
@@ -202,7 +203,8 @@ export const addTutor = async (
       specialty,
       degree,
       languages,
-      availability
+      availability,
+      cover_letter
     ]);
 
     return result;

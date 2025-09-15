@@ -53,7 +53,6 @@ CREATE TABLE users(
 );
 ALTER TABLE users ADD COLUMN is_verified BOOLEAN DEFAULT false;
 
-ALTER TABLE users ADD CONSTRAINT status_check CHECK (status IN ('accepted', 'rejected', 'waiting','aproved'))
 
 CREATE TABLE tutors (
   tutor_email TEXT PRIMARY KEY REFERENCES users(user_email) ON DELETE CASCADE,
@@ -63,9 +62,13 @@ CREATE TABLE tutors (
   degree TEXT,
   languages TEXT[], 
   availability TEXT,  
-  rating DECIMAL(3, 2),  
+  rating DECIMAL(3, 2), 
+  cover_letter TEXT, 
   is_active BOOLEAN DEFAULT TRUE 
 );
+
+ALTER TABLE tutors
+ADD COLUMN cover_letter TEXT;
 
 CREATE TABLE videos (
   id SERIAL PRIMARY KEY,
@@ -247,7 +250,7 @@ CREATE TABLE tutor_pdfs (
   id SERIAL PRIMARY KEY,
   tutor_email TEXT REFERENCES tutors(tutor_email) ON DELETE CASCADE,
   file_url TEXT NOT NULL,
-  type TEXT NOT NULL,  -- e.g., "ID", "Degree"
+  type TEXT NOT NULL, 
   uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -270,6 +273,16 @@ CREATE TABLE announcement_users (
 
 ALTER TABLE announcement_users
 ADD COLUMN is_read BOOLEAN DEFAULT false;
+
+CREATE TABLE session_videos (
+  id SERIAL PRIMARY KEY,
+  session_id UUID NOT NULL REFERENCES group_sessions(id) ON DELETE CASCADE,
+  file_url TEXT NOT NULL,
+  uploaded_at TIMESTAMP DEFAULT now()
+);
+
+ALTER TABLE tutors
+ADD COLUMN cover_letter TEXT;
 
 SELECT * FROM tutor_pdfs;
 

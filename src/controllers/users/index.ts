@@ -286,6 +286,7 @@ export const addTutorDetails = async (req: Request, res: Response) => {
     degree,
     languages,
     availability,
+    coverLetter, 
   } = req.body;
 
   if (
@@ -295,7 +296,8 @@ export const addTutorDetails = async (req: Request, res: Response) => {
     !specialty ||
     !degree ||
     !languages ||
-    !availability
+    !availability ||
+    !coverLetter
   ) {
     return res
       .status(400)
@@ -310,7 +312,8 @@ export const addTutorDetails = async (req: Request, res: Response) => {
       specialty as string,
       degree as string,
       languages as string[],
-      availability as string
+      availability as string,
+      coverLetter as string
     );
 
     res.status(200).send({ error: false, message: "Tutor added successfully" });
