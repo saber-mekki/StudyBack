@@ -60,7 +60,7 @@ export const loginUserController = async (req: Request, res: Response) => {
 };
 
 export const UpadateUserController = async (req: Request, res: Response) => {
-  const { name, email, phone_number, newEmail, gender, date_of_birth } =
+  const { name, email, phone_number, newEmail, gender, date_of_birth,idUser } =
     req.body;
 
   try {
@@ -70,7 +70,8 @@ export const UpadateUserController = async (req: Request, res: Response) => {
       phone_number as string,
       gender as string,
       newEmail as string,
-      date_of_birth as string
+      date_of_birth as string,
+      idUser as any
     );
 
     let tokens = jwtTokens(result.user_id, result.user_name, result.user_email);

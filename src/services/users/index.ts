@@ -68,17 +68,18 @@ export const updateUser = async (
   phone_number: string,
   gender: string,
   newEmail: string,
-  date_of_birth: string
+  date_of_birth: string,
+  idUser:any
 ) => {
+
   const query = `
     UPDATE public.users 
     SET 
     user_name = $1, 
     phone_number = $2, 
     gender = $3,
-    user_email=$4,
-    date_of_birth=$5
-    WHERE user_email=$6
+    date_of_birth=$4
+    WHERE user_id=$5
     RETURNING *;
   `;
 
@@ -86,12 +87,12 @@ export const updateUser = async (
     name,
     phone_number,
     gender,
-    newEmail,
     date_of_birth,
-    email,
+    idUser
   ];
 
   const result = await executeSQLQuery(query, values);
+  
   return result.rows[0];
 };
 
