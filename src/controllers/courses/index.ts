@@ -39,6 +39,7 @@ export const CreateCourseController = async (req: Request, res: Response) => {
     const pdfFile = (req.files as any).filter((file: any) => file.fieldname.startsWith('pdf') && file);
     const imageFile = (req.files as any).find((file: any) => file.fieldname === 'image');
     let imageUrl = '';
+
     if (imageFile) {
       const imageKey = `courses/images/${uuidv4()}-${imageFile.originalname}`;
       const fileBuffer = fs.readFileSync(imageFile.path);
@@ -51,6 +52,7 @@ export const CreateCourseController = async (req: Request, res: Response) => {
       };
       const uploadedImage = await s3.upload(uploadImageParams).promise();
       imageUrl = uploadedImage.Location;
+      fs.unlinkSync(imageFile.path);
     }
     if (req.files && videoFile) {
       const uploadPromises = videoFile.map(async (video: any, index: any) => {
@@ -64,6 +66,7 @@ export const CreateCourseController = async (req: Request, res: Response) => {
           ACL: 'private',
         };
         const uploadedVideo = await s3.upload(uploadVideoParams).promise();
+        fs.unlinkSync(video.path);
         return {
           file: uploadedVideo.Location,
           description: req.body.videos[index].description,
@@ -88,6 +91,7 @@ export const CreateCourseController = async (req: Request, res: Response) => {
         };
 
         const uploadedPdf = await s3.upload(uploadPdfParams).promise();
+        fs.unlinkSync(pdf.path);
         return {
           file: uploadedPdf.Location,
           description: req.body.pdfs[index].description,
