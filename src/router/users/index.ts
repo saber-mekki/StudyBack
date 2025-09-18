@@ -20,7 +20,7 @@ import {
   verifyController,
   uploadTutorPDFController,
   getTutorPDFsController,
-  deleteTutorPDFController,
+  deleteTutorPDFController,UpdateTutorController
 } from "../../controllers/users";
 import { authenticateToken } from "../../helpers";
 import multer from "multer";
@@ -214,6 +214,50 @@ router.route("/getUser").post(getUserController);
  *         description: Internal server error
  */   
 router.route("/updateUser").post(UpadateUserController);
+
+/**
+ * @swagger
+ * /updateTutor:
+ *   post:
+ *     summary: Update Tutor Details
+ *     tags: [Tutor]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               tutor_email:
+ *                 type: string
+ *                 example: "tutor@example.com"
+ *               country:
+ *                 type: string
+ *                 example: "Germany"
+ *               price_per_hour:
+ *                 type: number
+ *                 example: 40
+ *               specialty:
+ *                 type: string
+ *                 example: "Mathematics"
+ *               degree:
+ *                 type: string
+ *                 example: "Master of Education"
+ *               languages:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example: ["English","German"]
+ *     responses:
+ *       200:
+ *         description: Tutor updated successfully
+ *       404:
+ *         description: Tutor not found
+ *       500:
+ *         description: Internal server error
+ */
+router.route("/updateTutor").post(UpdateTutorController);
+
 
 /**
  * @swagger

@@ -19,7 +19,7 @@ import {
   showStatus,
   getUserById,
   verifyUserService,
-  makeAdmin,verifyService,uploadService
+  makeAdmin,verifyService,uploadService,updateTutor
 } from "../../services/users";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
@@ -86,6 +86,40 @@ export const UpadateUserController = async (req: Request, res: Response) => {
   } catch (error: unknown) {
     return res.status(500).json({
       error: "Internal Server Error",
+      message: (error as Error).message,
+    });
+  }
+};
+
+
+export const UpdateTutorController = async (req: Request, res: Response) => {
+  const {
+    tutor_email,
+    country,
+    price_per_hour,
+    specialty,
+    degree,
+    languages,
+  } = req.body;
+
+  try {
+    const result = await updateTutor(
+      tutor_email,
+      country,
+      price_per_hour,
+      specialty,
+      degree,
+      languages,
+    );
+
+    if (!result) {
+      return res.status(404).json({ error: true, message: "Tutor not found" });
+    }
+
+    return res.status(200).json({ error: false, result });
+  } catch (error: unknown) {
+    return res.status(500).json({
+      error: true,
       message: (error as Error).message,
     });
   }

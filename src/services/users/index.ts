@@ -24,7 +24,23 @@ export const getUsers = async () => {
 
 
 export const getUser = async (email: string) => {
-  const query = `SELECT * FROM public.users WHERE user_email = $1`;
+  const query = `
+    SELECT 
+      u.*,
+      t.country,
+      t.price_per_hour,
+      t.specialty,
+      t.degree,
+      t.languages,
+      t.availability,
+      t.rating,
+      t.cover_letter,
+      t.is_active
+    FROM public.users u
+    LEFT JOIN public.tutors t
+      ON u.user_email = t.tutor_email
+    WHERE u.user_email = $1;
+  `;
   const values = [email];
 
   const result = await executeSQLQuery(query, values);
@@ -93,6 +109,39 @@ export const updateUser = async (
 
   const result = await executeSQLQuery(query, values);
   
+  return result.rows[0];
+};
+
+export const updateTutor = async (
+  tutor_email: string,
+  country: string,
+  price_per_hour: number,
+  specialty: string,
+  degree: string,
+  languages: string[],
+) => {
+  const query = `
+    UPDATE public.tutors
+    SET
+      country = $1,
+      price_per_hour = $2,
+      specialty = $3,
+      degree = $4,
+      languages = $5
+    WHERE tutor_email = $6
+    RETURNING *;
+  `;
+
+  const values = [
+    country,
+    price_per_hour,
+    specialty,
+    degree,
+    languages,
+    tutor_email
+  ];
+
+  const result = await executeSQLQuery(query, values);
   return result.rows[0];
 };
 
