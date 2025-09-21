@@ -97,6 +97,7 @@ export const UpdateTutorController = async (req: Request, res: Response) => {
     tutor_email,
     country,
     price_per_hour,
+    currency,
     specialty,
     degree,
     languages,
@@ -107,6 +108,7 @@ export const UpdateTutorController = async (req: Request, res: Response) => {
       tutor_email,
       country,
       price_per_hour,
+      currency,
       specialty,
       degree,
       languages,
@@ -317,6 +319,7 @@ export const addTutorDetails = async (req: Request, res: Response) => {
     email,
     country,
     price_per_hour,
+    currency,
     specialty,
     degree,
     languages,
@@ -328,6 +331,7 @@ export const addTutorDetails = async (req: Request, res: Response) => {
     !email ||
     !country ||
     !price_per_hour ||
+    !currency ||
     !specialty ||
     !degree ||
     !languages ||
@@ -344,6 +348,7 @@ export const addTutorDetails = async (req: Request, res: Response) => {
       email as string,
       country as string,
       price_per_hour as number,
+      currency as string,
       specialty as string,
       degree as string,
       languages as string[],

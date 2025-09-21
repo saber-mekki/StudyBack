@@ -116,6 +116,7 @@ export const updateTutor = async (
   tutor_email: string,
   country: string,
   price_per_hour: number,
+  currency: string,
   specialty: string,
   degree: string,
   languages: string[],
@@ -125,16 +126,18 @@ export const updateTutor = async (
     SET
       country = $1,
       price_per_hour = $2,
-      specialty = $3,
-      degree = $4,
-      languages = $5
-    WHERE tutor_email = $6
+      currency=$3,
+      specialty = $4,
+      degree = $5,
+      languages = $6
+    WHERE tutor_email = $7
     RETURNING *;
   `;
 
   const values = [
     country,
     price_per_hour,
+    currency,
     specialty,
     degree,
     languages,
@@ -234,6 +237,7 @@ export const addTutor = async (
   tutor_email: string,
   country: string,
   price_per_hour: number,
+  currency: string,
   specialty: string,
   degree: string,
   languages: string[],
@@ -242,14 +246,15 @@ export const addTutor = async (
 ) => {
   try {
     const query = `
-      INSERT INTO tutors (tutor_email, country, price_per_hour, specialty, degree, languages, availability,cover_letter)
-      VALUES ($1, $2, $3, $4, $5, $6, $7,$8)
+      INSERT INTO tutors (tutor_email, country, price_per_hour, currency, specialty, degree, languages, availability,cover_letter)
+      VALUES ($1, $2, $3, $4, $5, $6, $7,$8,$9)
     `;
 
     const result = await executeSQLQuery(query, [
       tutor_email,
       country,
       price_per_hour,
+      currency,
       specialty,
       degree,
       languages,

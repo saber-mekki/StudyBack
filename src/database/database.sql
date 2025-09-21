@@ -58,6 +58,7 @@ CREATE TABLE tutors (
   tutor_email TEXT PRIMARY KEY REFERENCES users(user_email) ON DELETE CASCADE,
   country TEXT,
   price_per_hour DECIMAL(10, 2),
+  currency TEXT,
   specialty TEXT,
   degree TEXT,
   languages TEXT[], 
