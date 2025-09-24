@@ -35,7 +35,8 @@ export const getUser = async (email: string) => {
       t.availability,
       t.rating,
       t.cover_letter,
-      t.is_active
+      t.is_active,
+      t.currency
     FROM public.users u
     LEFT JOIN public.tutors t
       ON u.user_email = t.tutor_email
@@ -322,7 +323,8 @@ export const getUserById = async (userId: string) => {
            t.languages, 
            t.availability, 
            t.rating,
-           t.is_active
+           t.is_active,
+           t.currency
     FROM public.users u
     LEFT JOIN public.tutors t ON u.user_email = t.tutor_email
     WHERE u.user_id = $1
