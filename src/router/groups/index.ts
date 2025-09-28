@@ -291,8 +291,8 @@ router.delete("/groups/:id", deleteGroupController);
  *       404:
  *         description: Session not found
  */
+router.post("/groups/sessions/:id/close", closeSessionController);
 router.put("/groups/sessions/:id/close", closeSessionController);
-
 
 /**
  * @swagger
@@ -375,4 +375,5 @@ router.put("/sessions/attendance/:studentId/note", updateStudentNoteController);
 router.post("/sessions/upload-pdf", upload.single("session_pdf"), uploadSessionPDFController);
 router.get("/sessions/:sessionId/pdfs", getSessionPDFsController);
 router.delete("/sessions/:sessionId/pdfs/:pdfId", deleteSessionPDFController);
+
 export default router;
