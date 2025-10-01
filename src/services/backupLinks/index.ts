@@ -1,7 +1,7 @@
 import axios from "axios";
 import { google } from "googleapis";
 import { executeSQLQuery } from "../../database";
-
+import { URLSearchParams } from "url";
 // Helpers env
 const hasZoomEnv =
   !!process.env.ZOOM_ACCOUNT_ID &&
