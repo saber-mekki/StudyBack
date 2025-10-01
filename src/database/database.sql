@@ -282,6 +282,14 @@ CREATE TABLE session_videos (
   uploaded_at TIMESTAMP DEFAULT now()
 );
 
+CREATE TABLE IF NOT EXISTS live_backup_links (
+  room TEXT PRIMARY KEY,
+  meet_url TEXT,
+  zoom_meeting_number TEXT,
+  zoom_pwd TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 ALTER TABLE tutors
 ADD COLUMN cover_letter TEXT;
 
