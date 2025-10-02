@@ -18,7 +18,9 @@ import {
   updateStudentNoteController,
   uploadSessionPDFController,
   getSessionPDFsController,
-  deleteSessionPDFController
+  deleteSessionPDFController,
+  uploadSessionVideoController,
+  generateJaasTokenController
 } from "../../controllers/groups";
 
 const router = express.Router();
@@ -273,26 +275,8 @@ router.get("/students/:student_id/sessions", getStudentGroupSessionsController);
  */
 router.delete("/groups/:id", deleteGroupController);
 
-/**
- * @swagger
- * /groups/sessions/{id}/close:
- *   put:
- *     tags: [Groups]
- *     summary: Close a live session
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Session closed successfully
- *       404:
- *         description: Session not found
- */
+
 router.post("/groups/sessions/:id/close", closeSessionController);
-router.put("/groups/sessions/:id/close", closeSessionController);
 
 /**
  * @swagger
@@ -375,5 +359,13 @@ router.put("/sessions/attendance/:studentId/note", updateStudentNoteController);
 router.post("/sessions/upload-pdf", upload.single("session_pdf"), uploadSessionPDFController);
 router.get("/sessions/:sessionId/pdfs", getSessionPDFsController);
 router.delete("/sessions/:sessionId/pdfs/:pdfId", deleteSessionPDFController);
+//telecharger video:
+router.post(
+  "/sessions/:sessionId/upload-video",
+  upload.single("video"),            // Multer middleware
+  uploadSessionVideoController
+);
+//
+router.post("/sessions/jaas-token", generateJaasTokenController);
 
 export default router;
